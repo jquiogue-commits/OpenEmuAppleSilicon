@@ -132,7 +132,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>1</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEPMSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEPMSystemResponder</string>
 	<key>OESystemCoverAspectRatio</key>
 	<string>1</string>
 	<key>OESystemIcon</key>

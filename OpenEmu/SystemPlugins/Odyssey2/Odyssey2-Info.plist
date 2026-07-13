@@ -95,7 +95,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>2</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEOdyssey2SystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEOdyssey2SystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>odyssey2_library</string>
 	<key>OESystemIdentifier</key>

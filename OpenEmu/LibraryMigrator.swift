@@ -34,7 +34,7 @@ final class LibraryMigrator {
     
     func runMigration() throws {
         let modelURL = Bundle.main.url(forResource: "OEDatabase", withExtension: "momd")!
-        let destinationModel = NSManagedObjectModel(contentsOf: modelURL)
+        let destinationModel = NSManagedObjectModel(contentsOf: modelURL)!
         
         let modelNames = [
             "OEDatabase",

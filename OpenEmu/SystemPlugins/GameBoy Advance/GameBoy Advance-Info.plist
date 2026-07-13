@@ -132,7 +132,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>1</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEGBASystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEGBASystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>gba_library</string>
 	<key>OESystemIdentifier</key>

@@ -203,7 +203,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>2</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEIntellivisionSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEIntellivisionSystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>intellivision_library</string>
 	<key>OESystemIdentifier</key>

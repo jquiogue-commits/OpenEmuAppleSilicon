@@ -19,7 +19,7 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSPrincipalClass</key>
-	<string>OESaturnSystemController</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OESaturnSystemController</string>
 	<key>OEControlListKey</key>
 	<array>
 		<array>
@@ -227,7 +227,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>12</integer>
 	<key>OEResponderClassKey</key>
-	<string>OESaturnSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OESaturnSystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>saturn_library</string>
 	<key>OESystemIdentifier</key>

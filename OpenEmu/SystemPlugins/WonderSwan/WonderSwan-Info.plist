@@ -149,7 +149,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>1</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEWSSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEWSSystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>wonderswan_library</string>
 	<key>OESystemIdentifier</key>

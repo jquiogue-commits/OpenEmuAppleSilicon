@@ -118,7 +118,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>1</integer>
 	<key>OEResponderClassKey</key>
-	<string>OELynxSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OELynxSystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>lynx_library</string>
 	<key>OESystemIdentifier</key>

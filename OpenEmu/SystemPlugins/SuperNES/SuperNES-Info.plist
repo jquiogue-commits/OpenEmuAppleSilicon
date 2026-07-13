@@ -153,7 +153,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>8</integer>
 	<key>OEResponderClassKey</key>
-	<string>OESNESSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OESNESSystemResponder</string>
 	<key>OESystemIdentifier</key>
 	<string>openemu.system.snes</string>
 	<key>OESystemName</key>

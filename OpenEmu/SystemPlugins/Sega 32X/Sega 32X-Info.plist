@@ -149,7 +149,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>2</integer>
 	<key>OEResponderClassKey</key>
-	<string>OESega32XSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OESega32XSystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>32x_na_library</string>
 	<key>OESystemIdentifier</key>

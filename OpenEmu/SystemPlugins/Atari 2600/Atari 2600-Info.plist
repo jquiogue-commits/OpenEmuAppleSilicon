@@ -155,7 +155,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>2</integer>
 	<key>OEResponderClassKey</key>
-	<string>OE2600SystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OE2600SystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>atari2600_library</string>
 	<key>OESystemIdentifier</key>

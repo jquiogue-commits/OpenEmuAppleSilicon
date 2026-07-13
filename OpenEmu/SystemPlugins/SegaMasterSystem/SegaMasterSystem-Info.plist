@@ -111,7 +111,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>2</integer>
 	<key>OEResponderClassKey</key>
-	<string>OESMSSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OESMSSystemResponder</string>
 	<key>OESystemControlNamesKey</key>
 	<array>
 		<string>OESMSButtonStart</string>

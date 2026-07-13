@@ -118,7 +118,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>1</integer>
 	<key>OEResponderClassKey</key>
-	<string>OESVSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OESVSystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>supervision_library</string>
 	<key>OESystemIdentifier</key>

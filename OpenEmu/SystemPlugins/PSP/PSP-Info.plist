@@ -19,7 +19,7 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSPrincipalClass</key>
-	<string>OEPSPSystemController</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEPSPSystemController</string>
 	<key>OEControlListKey</key>
 	<array>
 		<array>
@@ -194,7 +194,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>1</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEPSPSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEPSPSystemResponder</string>
 	<key>OESystemCoverAspectRatio</key>
 	<string>1.7</string>
 	<key>OESystemIcon</key>

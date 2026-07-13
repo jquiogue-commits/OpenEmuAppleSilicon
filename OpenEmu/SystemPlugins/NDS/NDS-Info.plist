@@ -163,7 +163,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>1</integer>
 	<key>OEResponderClassKey</key>
-	<string>OENDSSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OENDSSystemResponder</string>
 	<key>OESystemCoverAspectRatio</key>
 	<string>0.9</string>
 	<key>OESystemIcon</key>

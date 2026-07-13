@@ -19,7 +19,7 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSPrincipalClass</key>
-	<string>OEPCFXSystemController</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEPCFXSystemController</string>
 	<key>OEControlListKey</key>
 	<array>
 		<array>
@@ -150,7 +150,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>2</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEPCFXSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEPCFXSystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>pcfx_library</string>
 	<key>OESystemIdentifier</key>

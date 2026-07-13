@@ -110,7 +110,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>1</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEGGSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEGGSystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>gamegear_library</string>
 	<key>OESystemIdentifier</key>

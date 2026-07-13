@@ -731,7 +731,6 @@ final class OELibraryDatabase: NSObject {
 #if DEBUG
 extension OELibraryDatabase {
     
-    @available(macOS 11.0, *)
     func dump(prefix: String = "***") {
         let subPrefix = prefix + "-----"
         Logger.library.debug("\(prefix) Beginning of database dump")

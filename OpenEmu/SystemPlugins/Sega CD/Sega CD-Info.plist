@@ -19,7 +19,7 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSPrincipalClass</key>
-	<string>OESegaCDSystemController</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OESegaCDSystemController</string>
 	<key>OEControlListKey</key>
 	<array>
 		<array>
@@ -148,7 +148,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>8</integer>
 	<key>OEResponderClassKey</key>
-	<string>OESegaCDSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OESegaCDSystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>segacd_library</string>
 	<key>OESystemIdentifier</key>

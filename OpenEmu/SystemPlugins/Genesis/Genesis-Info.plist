@@ -151,7 +151,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>8</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEGenesisSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEGenesisSystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>genesis_library</string>
 	<key>OESystemIdentifier</key>

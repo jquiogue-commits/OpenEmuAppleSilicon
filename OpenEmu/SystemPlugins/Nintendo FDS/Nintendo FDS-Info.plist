@@ -125,7 +125,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>4</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEFDSSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEFDSSystemResponder</string>
 	<key>OESystemCoverAspectRatio</key>
 	<string>1.1</string>
 	<key>OESystemIcon</key>

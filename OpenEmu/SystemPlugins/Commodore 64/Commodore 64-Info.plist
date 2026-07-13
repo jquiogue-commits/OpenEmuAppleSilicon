@@ -119,7 +119,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>2</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEC64SystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEC64SystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>c64_library</string>
 	<key>OESystemIdentifier</key>

@@ -226,7 +226,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>4</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEN64SystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEN64SystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>n64_library</string>
 	<key>OESystemIdentifier</key>

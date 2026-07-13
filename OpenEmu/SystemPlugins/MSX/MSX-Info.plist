@@ -106,7 +106,7 @@
 	<key>OENumberOfPlayersKey</key>
 	<integer>2</integer>
 	<key>OEResponderClassKey</key>
-	<string>OEMSXSystemResponder</string>
+	<string>$(PRODUCT_NAME:c99extidentifier).OEMSXSystemResponder</string>
 	<key>OESystemIcon</key>
 	<string>msx_library</string>
 	<key>OESystemIdentifier</key>
