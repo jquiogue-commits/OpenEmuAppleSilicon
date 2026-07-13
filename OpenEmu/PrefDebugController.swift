@@ -443,42 +443,46 @@ final class PrefDebugController: NSViewController {
         var request = URLRequest(url: releasesURL, cachePolicy: .reloadIgnoringCacheData, timeoutInterval: 30)
         request.setValue("OpenEmu", forHTTPHeaderField: "User-Agent")
         
-        let task = URLSession.shared.dataTask(with: request) { result, response, error in
-            
-            if let result = result,
-               let releases = try? JSONSerialization.jsonObject(with: result, options: .allowFragments) as? [AnyHashable],
-               let release = releases.first as? [AnyHashable : Any],
-               let tagName = release["tag_name"] as? String {
-                let url = downloadURL.appendingPathComponent("\(tagName)/Shaders-\(tagName).zip")
-                
-                DispatchQueue.main.async {
-                    let request = URLRequest(url: url)
-                    let downloadSession = URLSession(configuration: .default)
-                    let downloadTask = downloadSession.downloadTask(with: request) { location, response, error in
-                        
-                        if let location = location {
-                            
-                            let tmpDir = FileManager.default.temporaryDirectory
-                                .appendingPathComponent("org.openemu.OpenEmu", isDirectory: true)
-                                .appendingPathComponent(UUID().uuidString, isDirectory: true)
-                            
-                            ArchiveHelper.decompressFileInArchive(at: location, toDirectory: tmpDir)
-                            
-                            let urls = try? FileManager.default.contentsOfDirectory(at: tmpDir, includingPropertiesForKeys: nil)
-                            for url in urls ?? [] {
-                                ImportOperation.importShaderPlugin(at: url)
-                            }
-                            
-                            try? FileManager.default.removeItem(at: tmpDir)
+        Task {
+            let data: Data
+            do {
+                data = try await withCheckedThrowingContinuation { continuation in
+                    let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                        if let error {
+                            continuation.resume(throwing: error)
+                        } else {
+                            continuation.resume(returning: data ?? Data())
                         }
                     }
-                    
-                    downloadTask.resume()
+                    task.resume()
                 }
+            } catch {
+                return
             }
+
+            guard
+                let releases = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [AnyHashable],
+                let release = releases.first as? [AnyHashable : Any],
+                let tagName = release["tag_name"] as? String
+            else { return }
+
+            let url = downloadURL.appendingPathComponent("\(tagName)/Shaders-\(tagName).zip")
+
+            guard let location = try? await Download(url: url).download() else { return }
+
+            let tmpDir = FileManager.default.temporaryDirectory
+                .appendingPathComponent("org.openemu.OpenEmu", isDirectory: true)
+                .appendingPathComponent(UUID().uuidString, isDirectory: true)
+
+            ArchiveHelper.decompressFileInArchive(at: location, toDirectory: tmpDir)
+
+            let urls = try? FileManager.default.contentsOfDirectory(at: tmpDir, includingPropertiesForKeys: nil)
+            for url in urls ?? [] {
+                ImportOperation.importShaderPlugin(at: url)
+            }
+
+            try? FileManager.default.removeItem(at: tmpDir)
         }
-        
-        task.resume()
     }
     
     func openUserShaderFolder(_ sender: Any?) {
