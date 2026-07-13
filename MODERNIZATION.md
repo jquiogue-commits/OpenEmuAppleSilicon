@@ -114,14 +114,23 @@ conformance is unchanged, so the window/toolbar host them as before):
 Kept to macOS 11.5-safe SwiftUI (`@AppStorage`/`@StateObject` are 11.0+; avoided
 `.formStyle`/`LabeledContent`/`@FocusState`, which are 12–13+).
 
-## Known limitations
+## Reproducibility
 
-- **The Phase 0 SDK fix is not committed here.** The `OESwitchProController` enum-comparison
-  fix lives in the `OpenEmu-SDK` submodule's worktree and was never committed to the
-  submodule, so a fresh clone won't have it.
-- **Submodule URLs are relative** (`../../OpenEmu/*.git`) and won't resolve against this
-  fork; a `--recursive` clone needs the submodules initialized from upstream OpenEmu.
-- **Deferred:** the `CoreDownload` core-installer async conversion, the
-  `ROMImporter`/`ImportOperation` import pipeline, further SwiftUI leaves, and removal of
-  the redundant legacy `OESaveStateQLPlugin.qlgenerator` (superseded by the modern
-  `OpenEmuQLThumbnail`/`OpenEmuQLPreview` extensions on the 11.5+ floor).
+This fork clones and builds without any submodule edits:
+
+- **`.gitmodules` uses absolute upstream URLs**, so `git submodule update --init …`
+  resolves against the real OpenEmu/MacPaw repos from a fresh clone.
+- **No SDK patch is required.** A latent `-Wenum-compare` in the upstream OpenEmu-SDK
+  (which newer clang treats as a `-Werror` failure) is handled by passing
+  `GCC_TREAT_WARNINGS_AS_ERRORS=NO` in the build wrapper, so the unmodified submodule
+  compiles. See [`BUILDING-Xcode26.md`](BUILDING-Xcode26.md) §3.
+
+## Deferred / not yet done
+
+- The `CoreDownload` core-installer async conversion, and the
+  `ROMImporter`/`ImportOperation` import pipeline (larger efforts).
+- Further SwiftUI leaves (Cores / Library panes, the `NameShaderPreset` dialog).
+- Removal of the redundant legacy `OESaveStateQLPlugin.qlgenerator` (superseded by the
+  modern `OpenEmuQLThumbnail`/`OpenEmuQLPreview` extensions on the 11.5+ floor).
+- The 42 `SystemResponder` ports are compiler-verified only — not yet play-tested with a
+  running core; the PSP `.cso` path was likewise never tested against a real sample.
