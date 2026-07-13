@@ -48,18 +48,10 @@ final class LibraryToolbarDelegate: NSObject, NSToolbarDelegate {
     }
     
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        if #available(macOS 11.0, *) {
-            return [.oeViewMode,
-                    .oeCategory,
-                    .flexibleSpace,
-                    .oeSearch]
-        } else {
-            return [.oeViewMode,
-                    .oeGridSize,
-                    .oeCategory,
-                    .flexibleSpace,
-                    .oeSearch]
-        }
+        return [.oeViewMode,
+                .oeCategory,
+                .flexibleSpace,
+                .oeSearch]
     }
     
     func toolbarSelectableItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
@@ -237,19 +229,11 @@ final class LibraryToolbarDelegate: NSObject, NSToolbarDelegate {
     
     private(set) lazy var searchToolbarItem: NSToolbarItem = {
         let label = NSLocalizedString("Search", comment:"Toolbar, search field label")
-        if #available(macOS 11.0, *) {
-            let item = NSSearchToolbarItem(itemIdentifier: .oeSearch)
-            item.searchField = searchField
-            item.label = label
-            
-            return item
-        } else {
-            let item = NSToolbarItem(itemIdentifier: .oeSearch)
-            item.view = searchField
-            item.label = label
-            
-            return item
-        }
+        let item = NSSearchToolbarItem(itemIdentifier: .oeSearch)
+        item.searchField = searchField
+        item.label = label
+
+        return item
     }()
     
     // MARK: - Add

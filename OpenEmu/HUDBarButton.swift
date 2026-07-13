@@ -68,12 +68,7 @@ final class HUDBarButton: HoverButton {
                 
                 let rect = bounds.insetBy(dx: 1, dy: 1)
                 
-                let r: CGFloat
-                if #available(macOS 11, *) {
-                    r = 5
-                } else {
-                    r = 3
-                }
+                let r: CGFloat = 5
                 
                 let bezierPath = NSBezierPath(roundedRect: rect, xRadius: r, yRadius: r)
                 bezierPath.lineWidth = 1

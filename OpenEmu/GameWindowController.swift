@@ -631,10 +631,8 @@ extension GameWindowController: NSWindowDelegate {
     
     func windowWillEnterFullScreen(_ notification: Notification) {
         guard let window = notification.object as? NSWindow else {
-            if #available(macOS 11.0, *) {
-                Logger.default.error("\(#function): Expected NSWindow")
-            }
-            
+            Logger.default.error("\(#function): Expected NSWindow")
+
             return
         }
         
@@ -708,10 +706,8 @@ extension GameWindowController: NSWindowDelegate {
     
     func windowDidEnterFullScreen(_ notification: Notification) {
         guard let window = notification.object as? NSWindow else {
-            if #available(macOS 11.0, *) {
-                Logger.default.error("windowDidEnterFullScreen: Expected NSWindow")
-            }
-            
+            Logger.default.error("windowDidEnterFullScreen: Expected NSWindow")
+
             return
         }
         
@@ -740,9 +736,7 @@ extension GameWindowController: NSWindowDelegate {
         }
         
         if window.isAdaptiveSyncSchedulingAvailable {
-            if #available(macOS 11.0, *) {
-                Logger.default.debug("Enabling adaptive sync.")
-            }
+            Logger.default.debug("Enabling adaptive sync.")
             gameDocument.setAdaptiveSyncEnabled(true)
             adaptiveSyncWasEnabled = true
         }
@@ -829,10 +823,8 @@ extension GameWindowController: NSWindowDelegate {
     
     func windowDidExitFullScreen(_ notification: Notification) {
         guard let window = notification.object as? NSWindow else {
-            if #available(macOS 11.0, *) {
-                Logger.default.error("windowDidExitFullScreen: Expected NSWindow")
-            }
-            
+            Logger.default.error("windowDidExitFullScreen: Expected NSWindow")
+
             return
         }
         

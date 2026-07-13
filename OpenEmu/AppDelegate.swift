@@ -436,19 +436,17 @@ class AppDelegate: NSObject {
         // Set up OEBindingsController.
         _ = OEBindingsController.self
         let dm = OEDeviceManager.shared
-        if #available(macOS 10.15, *) {
-            switch dm.accessType {
-            case .unknown:
-                dm.requestAccess()
-                
-            case .denied:
-                DispatchQueue.main.async {
-                    self.showInputMonitoringPermissionsAlert()
-                }
-                
-            default:
-                break
+        switch dm.accessType {
+        case .unknown:
+            dm.requestAccess()
+
+        case .denied:
+            DispatchQueue.main.async {
+                self.showInputMonitoringPermissionsAlert()
             }
+
+        default:
+            break
         }
     }
     

@@ -89,16 +89,12 @@ final class CoreUpdater: NSObject {
     private func checkForUpdateInformation(url: URL, plugin: OECorePlugin, handler: @escaping (CoreAppcastItem) -> Void) {
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             if let error {
-                if #available(macOS 11.0, *) {
-                    Logger.download.error("Failed to download \(url, privacy: .public): \(error, privacy: .public)")
-                }
+                Logger.download.error("Failed to download \(url, privacy: .public): \(error, privacy: .public)")
                 return
             }
             
             guard let data else {
-                if #available(macOS 11.0, *) {
-                    Logger.download.error("Data was nil for \(url, privacy: .public): \(error, privacy: .public)")
-                }
+                Logger.download.error("Data was nil for \(url, privacy: .public): \(error, privacy: .public)")
                 return
             }
             
@@ -122,9 +118,7 @@ final class CoreUpdater: NSObject {
                     }
                 }
             } catch {
-                if #available(macOS 11.0, *) {
-                    Logger.download.error("Failed to process XML document for \(url, privacy: .public): \(error, privacy: .public)")
-                }
+                Logger.download.error("Failed to process XML document for \(url, privacy: .public): \(error, privacy: .public)")
             }
         }
         
@@ -133,9 +127,7 @@ final class CoreUpdater: NSObject {
     
     func checkForUpdatesAndInstall() {
         if let val = ProcessInfo.processInfo.environment["OE_DISABLE_UPDATE_CHECK"] as? NSString, val.boolValue {
-            if #available(macOS 11.0, *) {
-                Logger.download.info("OE_DISABLE_UPDATE_CHECK found; skipping check for updates.")
-            }
+            Logger.download.info("OE_DISABLE_UPDATE_CHECK found; skipping check for updates.")
             return
         }
         autoInstall = true
@@ -164,16 +156,12 @@ final class CoreUpdater: NSObject {
             }
             
             if let error {
-                if #available(macOS 11.0, *) {
-                    Logger.download.error("Failed to check for new cores for \(coreListURL, privacy: .public): \(error, privacy: .public)")
-                }
+                Logger.download.error("Failed to check for new cores for \(coreListURL, privacy: .public): \(error, privacy: .public)")
                 return
             }
             
             guard let data else {
-                if #available(macOS 11.0, *) {
-                    Logger.download.error("Data was nil for \(coreListURL, privacy: .public)")
-                }
+                Logger.download.error("Data was nil for \(coreListURL, privacy: .public)")
                 return
             }
 
@@ -495,9 +483,7 @@ private final class CoreAppcast {
             do {
                 self.items = try self.process(data: data)
             } catch { 
-                if #available(macOS 11.0, *) {
-                    Logger.download.error("Failed to process data for \(url, privacy: .public): \(error, privacy: .public)")
-                }
+                Logger.download.error("Failed to process data for \(url, privacy: .public): \(error, privacy: .public)")
             }
         }
         

@@ -31,35 +31,6 @@ final class ImageCacheService {
     
     public static var shared = ImageCacheService()
     
-    @available(macOS, deprecated: 10.15)
-    public func fetchImage(_ url: URL, completionHandler: @escaping (NSImage) -> Void) {
-        if let img = cache.object(forKey: url.absoluteString as NSString) {
-            completionHandler(img)
-            return
-        }
-        
-        Self.queue.async {
-            var res: NSImage? = nil
-            defer {
-                let res = res
-                DispatchQueue.main.async {
-                    completionHandler(res ?? NSImage(named: NSImage.cautionName)!)
-                }
-            }
-            
-            let imageSource = CGImageSourceCreateWithURL(url as CFURL, nil)
-            if let imageSource {
-                guard CGImageSourceGetType(imageSource) != nil else { return }
-                if let thumbnail = self.getThumbnailImage(imageSource: imageSource) {
-                    res = thumbnail
-                    let bytes = Int(thumbnail.size.width * thumbnail.size.height * 4)
-                    self.cache.setObject(thumbnail, forKey: url.absoluteString as NSString, cost: bytes)
-                }
-            }
-        }
-    }
-    
-    @available(macOS 10.15, *)
     public func fetchImage(_ url: URL) async -> NSImage {
         if let img = cache.object(forKey: url.absoluteString as NSString) {
             return img

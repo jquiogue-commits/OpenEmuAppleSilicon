@@ -167,16 +167,14 @@ final class OEAlert: NSObject {
         window = NSPanel(contentRect: .zero, styleMask: .titled, backing: .buffered, defer: true)
         window.isReleasedWhenClosed = false
         
-        if #available(macOS 11.0, *) {
-            window.titleVisibility = .hidden
-            window.titlebarAppearsTransparent = true
-            window.styleMask.insert(.fullSizeContentView)
-            window.isMovableByWindowBackground = true
-            
-            let veView = NSVisualEffectView()
-            veView.material = .popover
-            window.contentView = veView
-        }
+        window.titleVisibility = .hidden
+        window.titlebarAppearsTransparent = true
+        window.styleMask.insert(.fullSizeContentView)
+        window.isMovableByWindowBackground = true
+
+        let veView = NSVisualEffectView()
+        veView.material = .popover
+        window.contentView = veView
     }
     
     // MARK: -

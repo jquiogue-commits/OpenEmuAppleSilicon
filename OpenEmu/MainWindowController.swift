@@ -155,10 +155,8 @@ final class MainWindowController: NSWindowController {
         _ = libraryController.view
         
         window?.toolbar = libraryController.toolbar
-        if #available(macOS 11.0, *) {
-            window?.toolbarStyle = .unified
-            window?.titlebarSeparatorStyle = .line
-        }
+        window?.toolbarStyle = .unified
+        window?.titlebarSeparatorStyle = .line
     }
     
     private func setUpWindow() {
@@ -238,7 +236,8 @@ extension MainWindowController: LibraryControllerDelegate {
         openGameDocument(with: nil, saveState: saveState)
     }
     
-    @available(macOS, deprecated: 10.15, message: "Remove 'or \"User Reports\"' from alert (~line 392) and localizations, the term is not used in Catalina and above.")
+    // TODO: Remove 'or "User Reports"' from the ALERT_CORE_GLITCHES_FEEDBACK_HTML alert string
+    // and its localizations — the term is not used in Catalina and above (Console.app sidebar label).
     private func openGameDocument(with game: OEDBGame?, saveState state: OEDBSaveState?, secondAttempt retry: Bool = false, disableAutoReload noAutoReload: Bool = false) {
         
         guard let window = window else { return assertionFailure("MainWindow is nil") }

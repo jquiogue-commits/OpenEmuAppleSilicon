@@ -131,7 +131,6 @@ public class ShaderControl: NSObject {
         changePreset(preset)
     }
     
-    @available(macOS 10.15, *)
     public func changePreset(_ preset: ShaderPreset) async throws {
         try await withCheckedThrowingContinuation { (cont: CheckedContinuation<Void, Error>) in
             changePreset(preset) { error in

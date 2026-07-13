@@ -28,10 +28,6 @@ final class InsetScrollView: NSScrollView {
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        if #available(macOS 11.0, *) {
-            contentInsets.top = 52
-        } else {
-            contentInsets.top = 37
-        }
+        contentInsets.top = 52
     }
 }

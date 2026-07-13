@@ -68,10 +68,8 @@ final class ShaderParametersViewController: NSViewController {
     func loadPreset() {
         let preset = shaderControl.preset
         
-        if #available(macOS 10.15, *) {
-            selectPresetInList(preset)
-        }
-        
+        selectPresetInList(preset)
+
         if currentShaderName == preset.shader.name {
             // The parameters are the same when changing between presets
             if let params = self.params {
@@ -158,15 +156,11 @@ final class ShaderParametersViewController: NSViewController {
             self.loadPreset()
         }
         
-        if #available(macOS 10.15, *) {
-            presetsObserver = shaderControl.observe(\.presets) { [weak self] (_, _) in
-                self?.loadPresetListForCurrentShader()
-            }
+        presetsObserver = shaderControl.observe(\.presets) { [weak self] (_, _) in
+            self?.loadPresetListForCurrentShader()
         }
-        
-        if #available(macOS 10.15, *) {
-            configurePresetsView()
-        }
+
+        configurePresetsView()
         loadPreset()
         configureToolbar()
     }
@@ -248,9 +242,7 @@ final class ShaderParametersViewController: NSViewController {
     func configureToolbar() {
         guard let window = view.window else { return }
         window.toolbar = toolbar
-        if #available(macOS 11.0, *) {
-            window.toolbarStyle = .unifiedCompact
-        }
+        window.toolbarStyle = .unifiedCompact
         window.titleVisibility = .hidden
     }
 }
@@ -270,17 +262,13 @@ extension ShaderParametersViewController: NSToolbarDelegate {
         switch itemIdentifier {
         case .title:
             let tbi = NSToolbarItem(itemIdentifier: .title)
-            if #available(macOS 10.15, *) {
-                tbi.isBordered = isBordered
-            }
+            tbi.isBordered = isBordered
             let label = NSTextField(labelWithString: NSLocalizedString("Parameters", comment: "Window title: Shader parameters customisation window"))
             tbi.view = label
             return tbi
         case .shaderPicker:
             let tbi = NSToolbarItem(itemIdentifier: .shaderPicker)
-            if #available(macOS 10.15, *) {
-                tbi.isBordered = isBordered
-            }
+            tbi.isBordered = isBordered
             tbi.visibilityPriority = .low
             tbi.view = shaderListPopUpButton
             let mi = NSMenuItem()
@@ -452,10 +440,7 @@ extension ShaderParametersViewController: NSMenuItemValidation {
             }
             
         case #selector(renamePreset(_:)), #selector(delete(_:)):
-            if #available(macOS 10.15, *) {
-                return !shaderControl.preset.isDefault
-            }
-            return false
+            return !shaderControl.preset.isDefault
             
         default:
             break
@@ -530,8 +515,6 @@ extension ShaderParametersViewController {
 
 extension ShaderParametersViewController {
     @IBAction func renamePreset(_ sender: Any?) {
-        guard #available(macOS 10.15, *) else { return }
-        
         let nameShader = NameShaderPreset()
         nameShader.title = NSLocalizedString("Rename Shader Preset", comment: "Window title: Used to rename an existing shader preset")
         nameShader.existingName = shaderControl.preset.name
@@ -540,8 +523,6 @@ extension ShaderParametersViewController {
     }
     
     @IBAction override func delete(_ sender: Any?) {
-        guard #available(macOS 10.15, *) else { return }
-        
         let alert: OEAlert = .deleteShaderPreset(name: shaderControl.preset.name)
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         
@@ -563,7 +544,6 @@ extension ShaderParametersViewController {
 
 // MARK: - Manage Presets
 
-@available(macOS 10.15, *)
 extension ShaderParametersViewController: NameShaderPresetDelegate {
 
     func configurePresetsView() {

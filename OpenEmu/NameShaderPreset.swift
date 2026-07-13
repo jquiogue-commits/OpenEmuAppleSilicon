@@ -44,8 +44,7 @@ class NameShaderPreset: NSViewController, NSControlTextEditingDelegate {
     override func viewWillAppear() {
         super.viewWillAppear()
         
-        if #available(macOS 11.0, *),
-           let window = view.window {
+        if let window = view.window {
             window.titleVisibility = .hidden
             window.titlebarAppearsTransparent = true
             window.styleMask.insert(.fullSizeContentView)

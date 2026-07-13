@@ -284,7 +284,6 @@ extension OEDBSystem: GameCollectionViewItemProtocol {
 // MARK: - Debug
 
 #if DEBUG
-@available(macOS 11.0, *)
 extension OEDBSystem {
     
     func dump(prefix: String = "---") {

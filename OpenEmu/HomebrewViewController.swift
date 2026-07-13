@@ -73,11 +73,9 @@ final class HomebrewViewController: NSViewController {
         
         toolbar.addButton.isEnabled = false
         
-        if #available(macOS 11.0, *) {
-            for item in toolbar.items {
-                if item.itemIdentifier == .oeSearch {
-                    item.isEnabled = false
-                }
+        for item in toolbar.items {
+            if item.itemIdentifier == .oeSearch {
+                item.isEnabled = false
             }
         }
     }

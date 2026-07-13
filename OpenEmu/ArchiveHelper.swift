@@ -28,18 +28,12 @@ import OpenEmuKit // Crypto.SHA1
 
 enum ArchiveHelper {
     
-    @available(macOS 10.15, *)
     private static func hashPath(_ path: String) -> String {
         return Insecure.SHA1.hash(data: Data(path.utf8)).compactMap { String(format: "%02x", $0) }.joined()
     }
     
     static func temporaryDirectoryForDecompressionOfFile(at url: URL, withHash fileHash: String? = nil) -> URL {
-        var finalHash: String
-        if #available(macOS 10.15, *) {
-            finalHash = hashPath(url.path)
-        } else {
-            finalHash = Crypto.SHA1.digest(string: url.path)
-        }
+        var finalHash = hashPath(url.path)
         
         if let fileHash = fileHash {
             finalHash += "_\(fileHash)"

@@ -45,7 +45,6 @@ func DLog(_ message: @autoclosure () -> String, fileID: String = #fileID, functi
 #endif
 }
 
-@available(macOS 11.0, *)
 extension Logger {
     static let `default` = Logger(.default)
     static let download = Logger(.download)

@@ -111,11 +111,7 @@ final class GameControlsBarView: NSView {
         
         
         let volume = NSSlider()
-        if #available(macOS 11.0, *) {
-            volume.controlSize = .mini
-        } else {
-            volume.controlSize = .small
-        }
+        volume.controlSize = .mini
         volume.isContinuous = true
         volume.minValue = 0
         volume.maxValue = 1
