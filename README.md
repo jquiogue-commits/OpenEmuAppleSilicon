@@ -1,3 +1,8 @@
+> **This is a modernization fork of OpenEmu 2.4.1** for Xcode 26.5 / Apple Silicon —
+> Objective-C→Swift ports, a macOS 11.5 deployment floor, retirement of the legacy games
+> grid, async/await networking, and selective SwiftUI. See **[MODERNIZATION.md](MODERNIZATION.md)**
+> for what changed, and **[BUILDING-Xcode26.md](BUILDING-Xcode26.md)** for how to build.
+
 OpenEmu
 =======
 
