@@ -1393,7 +1393,6 @@
 		3E3511CE1C35DA920063E8CA /* nl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3E3511CF1C35DA920063E8CA /* nl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = nl; path = nl.lproj/ControlLabels.strings; sourceTree = "<group>"; };
 		53439A9313B92C97005C0CC8 /* OEDBAllGamesCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OEDBAllGamesCollection.swift; sourceTree = "<group>"; };
-		53439AB113B92DA3005C0CC8 /* OECoverGridDataSourceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OECoverGridDataSourceItem.h; sourceTree = "<group>"; };
 		53439AD813B92E59005C0CC8 /* OEListViewDataSourceItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OEListViewDataSourceItem.h; sourceTree = "<group>"; };
 		53439ADA13B92E59005C0CC8 /* RatingCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RatingCell.swift; sourceTree = "<group>"; };
 		53439B6813B932C5005C0CC8 /* PreferencePane.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencePane.swift; sourceTree = "<group>"; };
@@ -3075,7 +3074,6 @@
 		53439AAE13B92CFE005C0CC8 /* Grid View */ = {
 			isa = PBXGroup;
 			children = (
-				53439AB113B92DA3005C0CC8 /* OECoverGridDataSourceItem.h */,
 				8FDCCAD927063FDE00CBF2E3 /* GameCollectionViewItemIndicationLayer.swift */,
 			);
 			name = "Grid View";

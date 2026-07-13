@@ -23,7 +23,6 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import Cocoa
-import Quartz
 
 extension NSPasteboard.PasteboardType {
     static let game = NSPasteboard.PasteboardType("org.openemu.game")
@@ -445,88 +444,6 @@ extension OEDBGame: NSPasteboardReading {
     }
 }
 */
-// MARK: - OECoverGridDataSourceItem
-
-extension OEDBGame: OECoverGridDataSourceItem {
-    
-    func gridStatus() -> Int {
-        return Int(status.rawValue)
-    }
-    
-    func gridRating() -> UInt {
-        return rating?.uintValue ?? 0
-    }
-    
-    func setGridRating(_ newRating: UInt) {
-        rating = newRating as NSNumber
-        try? managedObjectContext?.save()
-    }
-    
-    func setGridTitle(_ title: String!) {
-        displayName = title
-        try? managedObjectContext?.save()
-    }
-    
-    var hasImage: Bool {
-        return boxImage != nil
-    }
-}
-
-// MARK: - IKImageBrowserItem
-
-extension OEDBGame {
-    
-    private static let artworkPlaceholderCache: NSCache<NSString, NSImage> = {
-        let cache = NSCache<NSString, NSImage>()
-        cache.countLimit = 20
-        return cache
-    }()
-    
-    private class func artworkPlaceholder(aspectRatio ratio: CGFloat) -> NSImage {
-        let key = "\(ratio)" as NSString
-        if let image = artworkPlaceholderCache.object(forKey: key) {
-            return image
-        } else {
-            let image = NSImage()
-            image.size = NSSize(width: 300, height: 300 * ratio)
-            artworkPlaceholderCache.setObject(image, forKey: key)
-            image.cacheMode = .bySize
-            return image
-        }
-    }
-    
-    override func imageUID() -> String! {
-        if let image = boxImage, image.isLocalImageAvailable, image.relativePath != nil {
-            return image.uuid
-        } else {
-            return ":MissingArtwork(\(system?.coverAspectRatio ?? 0))"
-        }
-    }
-    
-    override func imageRepresentationType() -> String! {
-        if let image = boxImage, image.isLocalImageAvailable, image.relativePath != nil {
-            return IKImageBrowserNSURLRepresentationType
-        } else {
-            return IKImageBrowserNSImageRepresentationType
-        }
-    }
-    
-    override func imageRepresentation() -> Any! {
-        if let image = boxImage, image.isLocalImageAvailable, image.relativePath != nil {
-            return image.imageURL
-        } else {
-            return Self.artworkPlaceholder(aspectRatio: system?.coverAspectRatio ?? 0)
-        }
-    }
-    
-    override func imageTitle() -> String! {
-        return displayName
-    }
-    
-    override func imageSubtitle() -> String! {
-        return nil
-    }
-}
 
 // MARK: - OEListViewDataSourceItem
 

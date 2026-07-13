@@ -7,7 +7,6 @@
 #import "OEResponder.h"
 
 
-#import "OECoverGridDataSourceItem.h"
 #import "OEListViewDataSourceItem.h"
 #import "OECollectionViewItemProtocol.h"
 #import "OEGameCollectionViewItemProtocol.h"
