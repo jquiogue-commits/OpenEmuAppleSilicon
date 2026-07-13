@@ -130,7 +130,9 @@ This fork clones and builds without any submodule edits:
 - The `CoreDownload` core-installer async conversion, and the
   `ROMImporter`/`ImportOperation` import pipeline (larger efforts).
 - Further SwiftUI leaves (Cores / Library panes, the `NameShaderPreset` dialog).
-- Removal of the redundant legacy `OESaveStateQLPlugin.qlgenerator` (superseded by the
-  modern `OpenEmuQLThumbnail`/`OpenEmuQLPreview` extensions on the 11.5+ floor).
 - The 42 `SystemResponder` ports are compiler-verified only — not yet play-tested with a
   running core; the PSP `.cso` path was likewise never tested against a real sample.
+
+The redundant legacy `OESaveStateQLPlugin.qlgenerator` target has now been removed
+(superseded by the modern `OpenEmuQLThumbnail`/`OpenEmuQLPreview` app extensions on the
+11.5+ floor).
