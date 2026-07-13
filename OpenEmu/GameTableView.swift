@@ -28,12 +28,6 @@ protocol GameTableViewMenuSource {
     func tableView(_ tableView: GameTableView, menuForItemsAt indexes: IndexSet) -> NSMenu?
 }
 
-extension OEGameCollectionViewController: GameTableViewMenuSource {
-    func tableView(_ tableView: GameTableView, menuForItemsAt indexes: IndexSet) -> NSMenu? {
-        return menuForItems(at: indexes)
-    }
-}
-
 extension NSUserInterfaceItemIdentifier {
     static let gameTableViewStatusColumn = NSUserInterfaceItemIdentifier.statusColumn
     static let gameTableViewTitleColumn  = NSUserInterfaceItemIdentifier.titleColumn

@@ -33,6 +33,7 @@ class ImageCollectionViewController: NSViewController {
     let blankSlateView = BlankSlateView()
     
     var shouldShowBlankSlate = false
+    var showsSectionHeaders = true
     var searchKeys = ["rom.game.gameTitle", "rom.game.name", "rom.game.system.lastLocalizedName", "name"]
     var currentSearchTerm = ""
     var itemSize = CGSize(width: 168, height: 143)
@@ -100,11 +101,9 @@ class ImageCollectionViewController: NSViewController {
          
         toolbar.addButton.isEnabled = false
         
-        if #available(macOS 11.0, *) {
-            for item in toolbar.items {
-                if item.itemIdentifier == .oeSearch {
-                    item.isEnabled = !shouldShowBlankSlate
-                }
+        for item in toolbar.items {
+            if item.itemIdentifier == .oeSearch {
+                item.isEnabled = !shouldShowBlankSlate
             }
         }
     }
@@ -216,26 +215,29 @@ class ImageCollectionViewController: NSViewController {
     }
     
     func show(tag: ViewTag) {
-        var newView: NSView!
         switch tag {
         case .collection:
-            newView = collectionView.enclosingScrollView
+            collectionView.reloadData()
+            showContentView(collectionView.enclosingScrollView)
         case .blankSlate:
-            newView = blankSlateView
+            showContentView(blankSlateView)
         }
-        
+    }
+
+    /// Makes `newView` the sole content of the controller's view, preserving first-responder status.
+    func showContentView(_ newView: NSView?) {
+        guard let newView else { return }
         if newView.superview == view {
             return
         }
-        
-        collectionView.reloadData()
+
         var makeFirstResponder = false
         if let firstResponder = view.window?.firstResponder as? NSView, firstResponder.isDescendant(of: view) {
             makeFirstResponder = true
         }
-        
+
         view.subviews.forEach { $0.removeFromSuperview() }
-        
+
         view.addSubview(newView)
         newView.frame = view.bounds
         if makeFirstResponder {
@@ -340,6 +342,41 @@ class ImageCollectionViewController: NSViewController {
 
         reloadData()
     }
+
+    func reloadData() {
+        precondition(Thread.isMainThread, "should only be called on main thread")
+
+        dataSourceDelegate.fetchItems()
+        shouldShowBlankSlate = dataSourceDelegate.isEmpty
+
+        var selectedItemIDs = Set<NSManagedObjectID>()
+        for indexPath in collectionView.selectionIndexPaths {
+            if let item = dataSourceDelegate.item(at: indexPath) as? OEDBItem {
+                selectedItemIDs.insert(item.objectID)
+            }
+        }
+
+        collectionView.reloadData()
+
+        var indexPaths = Set<IndexPath>()
+        for s in 0..<collectionView.numberOfSections {
+            for i in 0..<collectionView.numberOfItems(inSection: s) {
+                indexPaths.insert(IndexPath(item: i, section: s))
+            }
+        }
+
+        var selectedIndexPaths = Set<IndexPath>()
+        for indexPath in indexPaths {
+            if let item = dataSourceDelegate.item(at: indexPath) as? OEDBItem,
+               selectedItemIDs.contains(item.objectID) {
+                selectedIndexPaths.insert(indexPath)
+            }
+        }
+
+        collectionView.selectItems(at: selectedIndexPaths, scrollPosition: [])
+
+        updateBlankSlate()
+    }
 }
 
 private extension NSUserInterfaceItemIdentifier {
@@ -386,43 +423,8 @@ extension ImageCollectionViewController: NSCollectionViewDataSource {
         let headerView = view as! ImageCollectionHeaderView
         
         dataSourceDelegate.loadHeaderView(headerView, at: indexPath)
-        
+
         return view
-    }
-    
-    func reloadData() {
-        precondition(Thread.isMainThread, "should only be called on main thread")
-        
-        dataSourceDelegate.fetchItems()
-        shouldShowBlankSlate = dataSourceDelegate.isEmpty
-        
-        var selectedItemIDs = Set<NSManagedObjectID>()
-        for indexPath in collectionView.selectionIndexPaths {
-            if let item = dataSourceDelegate.item(at: indexPath) as? OEDBItem {
-                selectedItemIDs.insert(item.objectID)
-            }
-        }
-        
-        collectionView.reloadData()
-        
-        var indexPaths = Set<IndexPath>()
-        for s in 0..<collectionView.numberOfSections {
-            for i in 0..<collectionView.numberOfItems(inSection: s) {
-                indexPaths.insert(IndexPath(item: i, section: s))
-            }
-        }
-        
-        var selectedIndexPaths = Set<IndexPath>()
-        for indexPath in indexPaths {
-            if let item = dataSourceDelegate.item(at: indexPath) as? OEDBItem,
-               selectedItemIDs.contains(item.objectID) {
-                selectedIndexPaths.insert(indexPath)
-            }
-        }
-        
-        collectionView.selectItems(at: selectedIndexPaths, scrollPosition: [])
-        
-        updateBlankSlate()
     }
 }
 
@@ -538,7 +540,7 @@ extension ImageCollectionViewController: NSCollectionViewDelegateFlowLayout {
     }
     
     func collectionView(_ collectionView: NSCollectionView, layout collectionViewLayout: NSCollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> NSSize {
-        return NSSize(width: 0, height: 46)
+        return showsSectionHeaders ? NSSize(width: 0, height: 46) : .zero
     }
 }
 

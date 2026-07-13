@@ -92,31 +92,19 @@ class ImagesDataSource<Model: OEDBItem>: ImageDataSourceDelegate {
         view.representedObject = item
         let url = item[keyPath: imageURLKeyPath]
         view.imageURL = url
-        if #available(macOS 10.15, *) {
-            let task = Task(priority: .userInitiated) {
-                let img = await ImageCacheService.shared.fetchImage(url)
-                
-                guard !Task.isCancelled else { return }
-                
-                Task { @MainActor in
-                    tasks.removeValue(forKey: indexPath)
-                    view.imageView?.image = img
-                    view.view.needsLayout = true
-                }
-            }
-            
-            tasks[indexPath] = task
-        } else {
-            ImageCacheService.shared.fetchImage(url) { (img) in
-                if let existing = view.imageURL, existing != url {
-                    // ignore, if the view was recycled
-                    return
-                }
-                
+        let task = Task(priority: .userInitiated) {
+            let img = await ImageCacheService.shared.fetchImage(url)
+
+            guard !Task.isCancelled else { return }
+
+            Task { @MainActor in
+                tasks.removeValue(forKey: indexPath)
                 view.imageView?.image = img
                 view.view.needsLayout = true
             }
         }
+
+        tasks[indexPath] = task
         
         view.textField?.stringValue = item[keyPath: titleKeyPath]
         if let ts = item[keyPath: timestampKeyPath] {
@@ -125,10 +113,8 @@ class ImagesDataSource<Model: OEDBItem>: ImageDataSourceDelegate {
     }
     
     func unloadItemView(at indexPath: IndexPath) {
-        if #available(macOS 10.15, *) {
-            if let task = tasks.removeValue(forKey: indexPath) as? Task<(), Never> {
-                task.cancel()
-            }
+        if let task = tasks.removeValue(forKey: indexPath) as? Task<(), Never> {
+            task.cancel()
         }
     }
     

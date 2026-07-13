@@ -383,7 +383,6 @@ final class OEDBRom: OEDBItem {
 // MARK: - Debug
 
 #if DEBUG
-@available(macOS 11.0, *)
 extension OEDBRom {
     
     func dump(prefix: String = "---") {

@@ -24,6 +24,7 @@
 
 import Cocoa
 import Carbon.HIToolbox.Events
+import Quartz
 
 protocol CollectionViewExtendedDelegate {
     var supportsQuickLook: Bool { get }

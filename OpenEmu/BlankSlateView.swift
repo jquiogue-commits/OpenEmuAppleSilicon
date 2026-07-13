@@ -215,12 +215,7 @@ class BlankSlateView: NSView {
         layer.delegate = self
         self.layer = layer
         
-        if #available(macOS 11.0, *) {
-            effectiveAppearance.performAsCurrentDrawingAppearance {
-                dragIndicationLayer.borderColor = NSColor.controlAccentColor.cgColor
-            }
-        } else {
-            NSAppearance.current = effectiveAppearance
+        effectiveAppearance.performAsCurrentDrawingAppearance {
             dragIndicationLayer.borderColor = NSColor.controlAccentColor.cgColor
         }
         dragIndicationLayer.borderWidth = 2
@@ -242,12 +237,7 @@ class BlankSlateView: NSView {
     }
     
     override func viewDidChangeEffectiveAppearance() {
-        if #available(macOS 11.0, *) {
-            effectiveAppearance.performAsCurrentDrawingAppearance {
-                dragIndicationLayer.borderColor = NSColor.controlAccentColor.cgColor
-            }
-        } else {
-            NSAppearance.current = effectiveAppearance
+        effectiveAppearance.performAsCurrentDrawingAppearance {
             dragIndicationLayer.borderColor = NSColor.controlAccentColor.cgColor
         }
     }

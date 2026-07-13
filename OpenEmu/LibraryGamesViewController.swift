@@ -39,7 +39,7 @@ final class LibraryGamesViewController: NSSplitViewController {
     private let collectionViewMinWidth: CGFloat = 495
     
     private var sidebarController: SidebarController!
-    private var collectionController: OEGameCollectionViewController!
+    private var collectionController: GameCollectionViewController!
     
     private var toolbar: LibraryToolbar? {
         view.window?.toolbar as? LibraryToolbar
@@ -51,8 +51,8 @@ final class LibraryGamesViewController: NSSplitViewController {
         super.viewDidLoad()
         
         sidebarController = SidebarController()
-        collectionController = OEGameCollectionViewController()
-        
+        collectionController = GameCollectionViewController()
+
         setUpSplitView()
         assignDatabase()
         
@@ -73,17 +73,13 @@ final class LibraryGamesViewController: NSSplitViewController {
         
         collectionController.updateBlankSlate()
         
-        if #available(macOS 11.0, *) {
-            view.window?.titlebarSeparatorStyle = .automatic
-        }
+        view.window?.titlebarSeparatorStyle = .automatic
     }
     
     override func viewWillDisappear() {
         super.viewWillDisappear()
         
-        if #available(macOS 11.0, *) {
-            view.window?.titlebarSeparatorStyle = .line
-        }
+        view.window?.titlebarSeparatorStyle = .line
     }
     
     private func assignDatabase() {
@@ -101,16 +97,12 @@ final class LibraryGamesViewController: NSSplitViewController {
         sidebarItem.minimumThickness = sidebarMinWidth
         sidebarItem.maximumThickness = sidebarMaxWidth
         sidebarItem.canCollapse = false
-        if #available(macOS 11.0, *) {
-            sidebarItem.titlebarSeparatorStyle = .automatic
-        }
+        sidebarItem.titlebarSeparatorStyle = .automatic
         addSplitViewItem(sidebarItem)
         
         let collectionItem = NSSplitViewItem(viewController: collectionController)
         collectionItem.minimumThickness = collectionViewMinWidth
-        if #available(macOS 11.0, *) {
-            collectionItem.titlebarSeparatorStyle = .line
-        }
+        collectionItem.titlebarSeparatorStyle = .line
         addSplitViewItem(collectionItem)
     }
     
@@ -230,8 +222,8 @@ extension LibraryGamesViewController: NSMenuItemValidation {
     
     func validateMenuItem(_ menuItem: NSMenuItem) -> Bool {
         let isGridView = collectionController.selectedViewTag == .gridViewTag
-        let isBlankSlate = collectionController.shouldShowBlankSlate()
-        
+        let isBlankSlate = collectionController.shouldShowBlankSlate
+
         switch menuItem.action {
         case #selector(switchToGridView):
             menuItem.state = isGridView ? .on : .off

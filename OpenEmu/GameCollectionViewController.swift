@@ -24,21 +24,135 @@
 
 import Cocoa
 
+/// Which view the games collection is currently showing. Raw values are
+/// preserved from the retired `OECollectionViewController` (they are persisted
+/// in user defaults and referenced by menu-item tags).
+enum OECollectionViewControllerViewTag: Int {
+    case blankSlateTag = -1
+    case gridViewTag   = 0
+    case listViewTag   = 2
+}
+
 @objc
 class GameCollectionViewController: ImageCollectionViewController {
-    @IBOutlet weak var listView: GameTableView!
-    
-    override class func awakeFromNib() {
-        super.awakeFromNib()
-        Bundle(for: GameTableView.self).loadNibNamed("GameTableView", owner: self, topLevelObjects: nil)
+
+    private static let lastCollectionViewKey = "OELastCollectionView"
+
+    var dataSource = GamesDataSource()
+
+    private(set) var selectedViewTag: OECollectionViewControllerViewTag = .gridViewTag
+
+    private weak var listView: GameTableView!
+    private var listScrollView: NSScrollView?
+
+    override var representedObject: Any? {
+        didSet {
+            dataSource.collectionItem = representedObject as? GameCollectionViewItemProtocol
+            if isViewLoaded {
+                reloadData()
+            }
+        }
     }
+
+    var selectedGames: [OEDBGame] {
+        if selectedViewTag == .listViewTag {
+            return dataSource.games(atRows: listView?.selectedRowIndexes ?? [])
+        }
+        return dataSource.items(at: collectionView.selectionIndexPaths)
+    }
+
     override func viewDidLoad() {
+        showsSectionHeaders = false
+        dataSourceDelegate = dataSource
+
         super.viewDidLoad()
+
+        setUpListView()
+
+        let last = OECollectionViewControllerViewTag(rawValue: UserDefaults.standard.integer(forKey: Self.lastCollectionViewKey)) ?? .gridViewTag
+        selectedViewTag = last == .listViewTag ? .listViewTag : .gridViewTag
     }
-    
-    
-    
-    
+
+    private func setUpListView() {
+        var topLevelObjects: NSArray?
+        Bundle(for: GameTableView.self).loadNibNamed("GameTableView", owner: self, topLevelObjects: &topLevelObjects)
+
+        guard
+            let scrollView = topLevelObjects?.compactMap({ $0 as? NSScrollView }).first,
+            let table = scrollView.documentView as? GameTableView
+        else {
+            assertionFailure("GameTableView.xib did not vend a GameTableView in a scroll view")
+            return
+        }
+
+        listView = table
+        listScrollView = scrollView
+
+        table.dataSource = self
+        table.delegate = self
+        table.target = self
+        table.doubleAction = #selector(listViewDoubleClick(_:))
+        table.shouldShowSystemColumn = (representedObject as? GameCollectionViewItemProtocol)?.shouldShowSystemColumnInListView ?? true
+    }
+
+    func showGridView() {
+        setViewTag(.gridViewTag)
+    }
+
+    func showListView() {
+        setViewTag(.listViewTag)
+    }
+
+    private func setViewTag(_ tag: OECollectionViewControllerViewTag) {
+        selectedViewTag = tag
+        UserDefaults.standard.set(tag.rawValue, forKey: Self.lastCollectionViewKey)
+        updateBlankSlate()
+        validateToolbarItems()
+    }
+
+    override func updateBlankSlate() {
+        if shouldShowBlankSlate {
+            blankSlateView.representedObject = representedObject
+            showContentView(blankSlateView)
+        } else if selectedViewTag == .listViewTag {
+            listView?.reloadData()
+            showContentView(listScrollView)
+            positionListViewBelowToolbar()
+        } else {
+            collectionView.reloadData()
+            showContentView(collectionView.enclosingScrollView)
+        }
+    }
+
+    /// The library window uses a full-size content rect, so a view whose frame is
+    /// the controller's full bounds (as `showContentView(_:)` sets it) renders its
+    /// top under the toolbar. The grid's scroll view is inset by its storyboard
+    /// constraints and the blank slate by an explicit computation; the list scroll
+    /// view is loaded from its own nib and added at runtime, so it needs the same
+    /// treatment here.
+    private func positionListViewBelowToolbar() {
+        guard let listScrollView, let window = view.window else { return }
+        listScrollView.autoresizingMask = [.width, .height]
+        let viewFrame = view.convert(view.bounds, to: nil)
+        let nonOverlappingFrame = NSIntersectionRect(viewFrame, window.contentLayoutRect)
+        listScrollView.frame = view.convert(nonOverlappingFrame, from: nil)
+    }
+
+    override func reloadData() {
+        super.reloadData()
+        listView?.reloadData()
+    }
+
+    @objc private func listViewDoubleClick(_ sender: Any?) {
+        guard let game = dataSource.game(atRow: listView.clickedRow) else { return }
+        NSApp.sendAction(#selector(LibraryController.startSelectedGame(_:)), to: nil, from: game)
+    }
+
+    func zoomGridView(withValue value: CGFloat) {
+        zoomGridView(zoomValue: value)
+    }
+
+
     override func validateToolbarItems() {
         guard let toolbar = toolbar else { return }
         
@@ -58,11 +172,9 @@ class GameCollectionViewController: ImageCollectionViewController {
         
         toolbar.addButton.isEnabled = true
         
-        if #available(macOS 11.0, *) {
-            for item in toolbar.items {
-                if item.itemIdentifier == .oeSearch {
-                    item.isEnabled = !isBlankSlate
-                }
+        for item in toolbar.items {
+            if item.itemIdentifier == .oeSearch {
+                item.isEnabled = !isBlankSlate
             }
         }
     }
@@ -531,7 +643,70 @@ extension GameCollectionViewController: CollectionViewExtendedDelegate, NSMenuIt
     }
     
     func collectionView(_ collectionView: CollectionView, doubleClickForItemAt indexPath: IndexPath) {
-        let item = dataSource.item(at: indexPath)
+        guard let item: OEDBGame = dataSource.item(at: indexPath) else { return }
         NSApp.sendAction(#selector(LibraryController.startSelectedGame(_:)), to: nil, from: item)
+    }
+}
+
+// MARK: - List View (cell-based table)
+
+extension GameCollectionViewController: NSTableViewDataSource, NSTableViewDelegate {
+
+    func numberOfRows(in tableView: NSTableView) -> Int {
+        dataSource.numberOfRows
+    }
+
+    func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any? {
+        guard let game = dataSource.game(atRow: row), let columnID = tableColumn?.identifier else { return nil }
+
+        switch columnID {
+        case .gameTableViewStatusColumn:
+            let imageName = game.listViewStatus()!
+            let isSelected = tableView.selectedRowIndexes.contains(row)
+            let isMissing = imageName == "list_indicator_missing"
+            let image = NSImage(named: imageName)
+            let tint: NSColor = isMissing ? .systemOrange : .controlAccentColor
+            return isSelected ? image : image?.withTintColor(tint)
+        default:
+            // The remaining columns key off computed listView* accessors via KVC.
+            return game.value(forKey: columnID.rawValue)
+        }
+    }
+
+    func tableView(_ tableView: NSTableView, setObjectValue object: Any?, for tableColumn: NSTableColumn?, row: Int) {
+        guard let game = dataSource.game(atRow: row), let columnID = tableColumn?.identifier else { return }
+
+        switch columnID {
+        case .gameTableViewRatingColumn:
+            game.setListViewRating(object as? NSNumber)
+        case .gameTableViewTitleColumn:
+            let title = (object as? NSAttributedString)?.string ?? object as? String
+            game.setListViewTitle(title)
+            // Search results may no longer be valid, reload.
+            reloadData()
+        default:
+            return
+        }
+        try? game.managedObjectContext?.save()
+    }
+
+    func tableView(_ tableView: NSTableView, sortDescriptorsDidChange oldDescriptors: [NSSortDescriptor]) {
+        dataSource.sort(using: tableView.sortDescriptors)
+        tableView.reloadData()
+    }
+
+    func tableView(_ tableView: NSTableView, shouldEdit tableColumn: NSTableColumn?, row: Int) -> Bool {
+        tableColumn?.identifier == .gameTableViewTitleColumn || tableColumn?.identifier == .gameTableViewRatingColumn
+    }
+
+    func tableViewSelectionDidChange(_ notification: Notification) {
+        selectionDidChange()
+    }
+}
+
+extension GameCollectionViewController: GameTableViewMenuSource {
+    func tableView(_ tableView: GameTableView, menuForItemsAt indexes: IndexSet) -> NSMenu? {
+        // `selectedGames` reflects the table selection while in list mode, so reuse the grid menu.
+        collectionView(collectionView, menuForItemsAt: [])
     }
 }

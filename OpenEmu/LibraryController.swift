@@ -61,11 +61,6 @@ final class LibraryController: NSTabViewController, NSMenuItemValidation {
         toolbar.centeredItemIdentifier = .oeCategory
         toolbar.allowsUserCustomization = true
         toolbar.autosavesConfiguration = true
-        if #available(macOS 10.15, *) {} else {
-            // avoids a crash on 10.14. (f0e12e8)
-            // TODO: remove when 10.14 support goes away
-            toolbar.allowsUserCustomization = false
-        }
         return toolbar
     }()
     private lazy var toolbarDelegate: LibraryToolbarDelegate = {
@@ -78,7 +73,7 @@ final class LibraryController: NSTabViewController, NSMenuItemValidation {
         super.viewDidLoad()
         
         //set initial zoom value
-        let zoomValue = UserDefaults.standard.float(forKey: OELastGridSizeKey)
+        let zoomValue = UserDefaults.standard.float(forKey: Key.lastGridSize.rawValue)
         toolbar.gridSizeSlider.floatValue = zoomValue
         
         tabView.autoresizingMask = [.width, .height]
@@ -93,65 +88,8 @@ final class LibraryController: NSTabViewController, NSMenuItemValidation {
             selectedCatagory = category
         }
         
-        newSaveStatesViewObserver = Self.$useNewSaveStatesViewController.observe { [weak self] _, newValue in
-            guard
-                let self = self,
-                let useNew = newValue
-            else { return }
-            
-            let idx = self.tabView.indexOfTabViewItem(withIdentifier: NSUserInterfaceItemIdentifier.savestatesViewController)
-            let item = self.tabView.tabViewItem(at: idx)
-            self.removeTabViewItem(item)
-            if useNew {
-                let ctrl = SaveStateViewController()
-                ctrl.database = self.database
-                ctrl.representedObject = OEDBSaveStatesMedia.shared
-                let item = NSTabViewItem(identifier: NSUserInterfaceItemIdentifier.savestatesViewController)
-                item.viewController = ctrl
-                self.insertTabViewItem(item, at: idx)
-            } else {
-                let ctrl = OEMediaViewController()
-                ctrl.database = self.database
-                ctrl.saveStateMode = true
-                ctrl.representedObject = OEDBSaveStatesMedia.shared
-                let item = NSTabViewItem(identifier: NSUserInterfaceItemIdentifier.savestatesViewController)
-                item.viewController = ctrl
-                self.insertTabViewItem(item, at: idx)
-            }
-            self.selectedTabViewItemIndex = idx
-        }
-        
-        newScreenshotsViewObserver = Self.$useNewScreenshotsViewController.observe { [weak self] _, newValue in
-            guard
-                let self = self,
-                let useNew = newValue
-            else { return }
-            
-            let idx = self.tabView.indexOfTabViewItem(withIdentifier: NSUserInterfaceItemIdentifier.screenshotsViewController)
-            let item = self.tabView.tabViewItem(at: idx)
-            self.removeTabViewItem(item)
-            if useNew {
-                let ctrl = ScreenshotViewController()
-                ctrl.database = self.database
-                ctrl.representedObject = OEDBScreenshotsMedia.shared
-                let item = NSTabViewItem(identifier: NSUserInterfaceItemIdentifier.screenshotsViewController)
-                item.viewController = ctrl
-                self.insertTabViewItem(item, at: idx)
-            } else {
-                let ctrl = OEMediaViewController()
-                ctrl.database = self.database
-                ctrl.representedObject = OEDBScreenshotsMedia.shared
-                let item = NSTabViewItem(identifier: NSUserInterfaceItemIdentifier.screenshotsViewController)
-                item.viewController = ctrl
-                self.insertTabViewItem(item, at: idx)
-            }
-            self.selectedTabViewItemIndex = idx
-        }
     }
-    
-    var newSaveStatesViewObserver: Any?
-    var newScreenshotsViewObserver: Any?
-    
+
     override func tabView(_ tabView: NSTabView, didSelect tabViewItem: NSTabViewItem?) {
         super.tabView(tabView, didSelect: tabViewItem)
         
@@ -168,45 +106,22 @@ final class LibraryController: NSTabViewController, NSMenuItemValidation {
             addTabViewItem(item)
         }
         
-        if Self.useNewSaveStatesViewController {
-            do {
-                let ctrl = SaveStateViewController()
-                ctrl.database = database
-                ctrl.representedObject = OEDBSaveStatesMedia.shared
-                let item = NSTabViewItem(identifier: NSUserInterfaceItemIdentifier.screenshotsViewController)
-                item.viewController = ctrl
-                addTabViewItem(item)
-            }
-        } else {
-            do {
-                let ctrl = OEMediaViewController()
-                ctrl.database = database
-                ctrl.saveStateMode = true
-                ctrl.representedObject = OEDBSaveStatesMedia.shared
-                let item = NSTabViewItem(identifier: NSUserInterfaceItemIdentifier.savestatesViewController)
-                item.viewController = ctrl
-                addTabViewItem(item)
-            }
+        do {
+            let ctrl = SaveStateViewController()
+            ctrl.database = database
+            ctrl.representedObject = OEDBSaveStatesMedia.shared
+            let item = NSTabViewItem(identifier: NSUserInterfaceItemIdentifier.savestatesViewController)
+            item.viewController = ctrl
+            addTabViewItem(item)
         }
-        
-        if Self.useNewScreenshotsViewController {
-            do {
-                let ctrl = ScreenshotViewController()
-                ctrl.database = database
-                ctrl.representedObject = OEDBScreenshotsMedia.shared
-                let item = NSTabViewItem(identifier: NSUserInterfaceItemIdentifier.screenshotsViewController)
-                item.viewController = ctrl
-                addTabViewItem(item)
-            }
-        } else {
-            do {
-                let ctrl = OEMediaViewController()
-                ctrl.database = database
-                ctrl.representedObject = OEDBScreenshotsMedia.shared
-                let item = NSTabViewItem(identifier: NSUserInterfaceItemIdentifier.screenshotsViewController)
-                item.viewController = ctrl
-                addTabViewItem(item)
-            }
+
+        do {
+            let ctrl = ScreenshotViewController()
+            ctrl.database = database
+            ctrl.representedObject = OEDBScreenshotsMedia.shared
+            let item = NSTabViewItem(identifier: NSUserInterfaceItemIdentifier.screenshotsViewController)
+            item.viewController = ctrl
+            addTabViewItem(item)
         }
         do {
             let ctrl = HomebrewViewController()
@@ -449,15 +364,9 @@ private extension NSUserInterfaceItemIdentifier {
 }
 
 extension Key {
-    static let useNewSaveStatesViewController: Key = "useNewSaveStatesViewController"
-    static let useNewScreenshotsViewController: Key = "useNewScreenshotsViewController"
 }
 
 extension LibraryController {
-    @UserDefault(.useNewSaveStatesViewController, defaultValue: false)
-    static var useNewSaveStatesViewController: Bool
-    @UserDefault(.useNewScreenshotsViewController, defaultValue: false)
-    static var useNewScreenshotsViewController: Bool
 }
 
 
