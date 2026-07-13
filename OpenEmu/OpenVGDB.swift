@@ -53,8 +53,8 @@ final class OpenVGDB: NSObject {
     private(set) var downloadVersion: String?
     private(set) var isUpdating = false
     
-    private var downloadSession: URLSession?
-    
+    private var currentDownload: Download?
+
     private var database: SQLiteDatabase?
     
     var isAvailable: Bool {
@@ -68,16 +68,12 @@ final class OpenVGDB: NSObject {
         let databaseURL = sharedHelper.databaseFileURL
         
         if (try? databaseURL.checkResourceIsReachable()) != true {
-            DispatchQueue.global(qos: .utility).async {
-                let defaults = UserDefaults.standard
-                defaults.removeObject(forKey: OpenVGDB.updateCheckKey)
-                defaults.removeObject(forKey: OpenVGDB.versionKey)
-                
-                sharedHelper.checkForUpdates { url, version in
-                    if let url = url, let version = version {
-                        sharedHelper.install(with: url, version: version)
-                    }
-                }
+            let defaults = UserDefaults.standard
+            defaults.removeObject(forKey: OpenVGDB.updateCheckKey)
+            defaults.removeObject(forKey: OpenVGDB.versionKey)
+
+            Task.detached(priority: .utility) {
+                await sharedHelper.checkForUpdatesAndInstall()
             }
         }
         else {
@@ -86,27 +82,31 @@ final class OpenVGDB: NSObject {
             } catch {
                 NSApp.presentError(error)
             }
-            
+
             // check for updates
-            DispatchQueue.global(qos: .utility).async {
-                let defaults = UserDefaults.standard
-                let lastUpdateCheck = defaults.object(forKey: OpenVGDB.updateCheckKey) as! Date
-                let updateInterval = defaults.double(forKey: OpenVGDB.updateIntervalKey)
-                
-                if Date().timeIntervalSince(lastUpdateCheck) > updateInterval {
-                    NSLog("Check for updates (\(Date().timeIntervalSince(lastUpdateCheck)) > \(updateInterval))")
-                    
-                    sharedHelper.checkForUpdates { url, version in
-                        if let url = url, let version = version {
-                            sharedHelper.install(with: url, version: version)
-                        }
-                    }
+            let defaults = UserDefaults.standard
+            let lastUpdateCheck = defaults.object(forKey: OpenVGDB.updateCheckKey) as! Date
+            let updateInterval = defaults.double(forKey: OpenVGDB.updateIntervalKey)
+
+            if Date().timeIntervalSince(lastUpdateCheck) > updateInterval {
+                NSLog("Check for updates (\(Date().timeIntervalSince(lastUpdateCheck)) > \(updateInterval))")
+
+                Task.detached(priority: .utility) {
+                    await sharedHelper.checkForUpdatesAndInstall()
                 }
             }
         }
-        
+
         return sharedHelper
     }()
+
+    /// Checks for a newer OpenVGDB release and installs it if one is available.
+    private func checkForUpdatesAndInstall() async {
+        let (url, version) = await checkForUpdates()
+        if let url = url, let version = version {
+            await install(with: url, version: version)
+        }
+    }
     
     override init() {
         super.init()
@@ -119,137 +119,115 @@ final class OpenVGDB: NSObject {
         return url
     }
     
-    /// Checks for updates and passes URL of new release and version if any newer DB is found.
-    func checkForUpdates(withHandler handler: @escaping (_ newURL: URL?, _ newVersion: String?) -> Void) {
-        
+    /// Checks for updates and returns the URL and version of a newer DB release, if any.
+    func checkForUpdates() async -> (url: URL?, version: String?) {
+
         DLog("")
-        
+
         var request = URLRequest(url: OpenVGDB.updateURL, cachePolicy: .reloadIgnoringCacheData, timeoutInterval: 30)
         request.setValue("OpenEmu", forHTTPHeaderField: "User-Agent")
-        
-        let task = URLSession.shared.dataTask(with: request) { result, response, error in
-            
-            if let result = result {
-                let releases = try? JSONSerialization.jsonObject(with: result, options: .allowFragments) as? [AnyHashable]
-                if let releases = releases {
-                    let defaults = UserDefaults.standard
-                    
-                    let currentVersion = defaults.string(forKey: OpenVGDB.versionKey)!
-                    var nextVersion = currentVersion
-                    
-                    defaults.set(Date(), forKey: OpenVGDB.updateCheckKey)
-                    
-                    for release in releases {
-                        if let release = release as? [AnyHashable : Any],
-                           let tagName = release["tag_name"] as? String,
-                           tagName.compare(nextVersion) != .orderedSame {
-                            nextVersion = tagName
-                        }
-                    }
-                    
-                    if nextVersion != currentVersion {
-                        let url = OpenVGDB.downloadURL.appendingPathComponent("\(nextVersion)/\(OpenVGDB.fileName).zip")
-                        
-                        DLog("Updating OpenVGDB version from \(!currentVersion.isEmpty ? currentVersion : "(none)") to \(nextVersion).")
-                        
-                        handler(url, nextVersion)
-                        
-                        return
+
+        let data: Data
+        do {
+            data = try await withCheckedThrowingContinuation { continuation in
+                let task = URLSession.shared.dataTask(with: request) { data, _, error in
+                    if let error = error {
+                        continuation.resume(throwing: error)
                     } else {
-                        DLog("OpenVGDB not updated.")
+                        continuation.resume(returning: data ?? Data())
                     }
                 }
+                task.resume()
             }
-            
-            handler(nil, nil)
+        } catch {
+            DLog("OpenVGDB update check failed: \(error)")
+            return (nil, nil)
         }
-        
-        task.resume()
+
+        guard let releases = (try? JSONSerialization.jsonObject(with: data, options: .allowFragments)) as? [AnyHashable] else {
+            return (nil, nil)
+        }
+
+        let defaults = UserDefaults.standard
+        let currentVersion = defaults.string(forKey: OpenVGDB.versionKey)!
+        var nextVersion = currentVersion
+
+        defaults.set(Date(), forKey: OpenVGDB.updateCheckKey)
+
+        for release in releases {
+            if let release = release as? [AnyHashable : Any],
+               let tagName = release["tag_name"] as? String,
+               tagName.compare(nextVersion) != .orderedSame {
+                nextVersion = tagName
+            }
+        }
+
+        guard nextVersion != currentVersion else {
+            DLog("OpenVGDB not updated.")
+            return (nil, nil)
+        }
+
+        let url = OpenVGDB.downloadURL.appendingPathComponent("\(nextVersion)/\(OpenVGDB.fileName).zip")
+        DLog("Updating OpenVGDB version from \(!currentVersion.isEmpty ? currentVersion : "(none)") to \(nextVersion).")
+        return (url, nextVersion)
     }
-    
+
     func cancelUpdate() {
         DLog("Cancelling OpenVGDB download.")
-        
-        downloadSession?.invalidateAndCancel()
+
+        currentDownload?.cancel()
     }
-    
-    func install(with url: URL, version versionTag: String) {
-        
-        DispatchQueue.main.async {
-            self.isUpdating = true
-            
-            NotificationCenter.default.post(name: .GameInfoHelperWillUpdate, object: self)
-            
-            self.downloadProgress = 0
-            self.downloadVersion = versionTag
-            
-            let request = URLRequest(url: url)
-            
-            let downloadSession = URLSession(configuration: .default, delegate: self, delegateQueue: .main)
-            self.downloadSession = downloadSession
-            
-            let downloadTask = downloadSession.downloadTask(with: request)
-            
-            DLog("Starting OpenVGDB download.")
-            
-            downloadTask.resume()
+
+    @MainActor
+    func install(with url: URL, version versionTag: String) async {
+
+        isUpdating = true
+        NotificationCenter.default.post(name: .GameInfoHelperWillUpdate, object: self)
+
+        downloadProgress = 0
+        downloadVersion = versionTag
+
+        let download = Download(url: url)
+        currentDownload = download
+
+        DLog("Starting OpenVGDB download.")
+
+        defer {
+            isUpdating = false
+            downloadVersion = nil
+            currentDownload = nil
+            NotificationCenter.default.post(name: .GameInfoHelperDidUpdate, object: self)
         }
+
+        let location: URL
+        do {
+            location = try await download.download(progressHandler: { [weak self] progress in
+                guard let self = self else { return }
+                self.downloadProgress = progress
+                NotificationCenter.default.post(name: .GameInfoHelperDidChangeUpdateProgress, object: self)
+            })
+        } catch {
+            DLog("OpenVGDB download did complete: \(error.localizedDescription)")
+            downloadProgress = 0
+            return
+        }
+
+        DLog("OpenVGDB download did finish downloading temporary data.")
+
+        let databaseURL = databaseFileURL
+        ArchiveHelper.decompressFileInArchive(at: location, toDirectory: databaseURL.deletingLastPathComponent())
+        DLog("OpenVGDB extracted to database folder.")
+
+        database = try? SQLiteDatabase(url: databaseURL)
+        if database != nil {
+            UserDefaults.standard.set(versionTag, forKey: OpenVGDB.versionKey)
+        }
+
+        downloadProgress = 1
     }
-    
+
     func executeQuery(_ sql: String) throws -> [[String : Any]] {
         guard let database = database else { return [] }
         return try database.executeQuery(sql)
-    }
-}
-
-extension OpenVGDB: URLSessionDownloadDelegate {
-    
-    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
-        
-        DLog("OpenVGDB download did complete: \(error?.localizedDescription ?? "no errors")")
-        
-        isUpdating = false
-        downloadProgress = 0
-        
-        downloadSession?.finishTasksAndInvalidate()
-        downloadSession = nil
-        
-        postDidUpdateNotification()
-    }
-    
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        
-        downloadProgress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
-        
-        NotificationCenter.default.post(name: .GameInfoHelperDidChangeUpdateProgress, object: self)
-    }
-    
-    func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        
-        DLog("OpenVGDB download did finish downloading temporary data.")
-        
-        let url = databaseFileURL
-        let databaseFolder = url.deletingLastPathComponent()
-        
-        ArchiveHelper.decompressFileInArchive(at: location, toDirectory: databaseFolder)
-        
-        DLog("OpenVGDB extracted to database folder.")
-        
-        database = try? SQLiteDatabase(url: url)
-        if database != nil {
-            UserDefaults.standard.set(downloadVersion, forKey: OpenVGDB.versionKey)
-        }
-        
-        isUpdating = false
-        downloadProgress = 1
-        downloadVersion = nil
-        
-        postDidUpdateNotification()
-    }
-    
-    private func postDidUpdateNotification() {
-        DispatchQueue.main.async {
-            NotificationCenter.default.post(name: .GameInfoHelperDidUpdate, object: self)
-        }
     }
 }

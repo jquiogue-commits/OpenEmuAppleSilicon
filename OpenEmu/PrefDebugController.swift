@@ -420,9 +420,10 @@ final class PrefDebugController: NSViewController {
         defaults.removeObject(forKey: OpenVGDB.versionKey)
         
         let helper = OpenVGDB.shared
-        helper.checkForUpdates { url, version in
+        Task {
+            let (url, version) = await helper.checkForUpdates()
             if let url = url, let version = version {
-                helper.install(with: url, version: version)
+                await helper.install(with: url, version: version)
             }
         }
     }
