@@ -309,11 +309,18 @@ final class OEDBGame: OEDBItem {
         
         let romDownload = Download(url: url)
         self.romDownload = romDownload
-        romDownload.completionHandler = { url, error in
-            if let url = url, error == nil {
-                DLog("Downloaded to \(url)")
-                rom.url = url
-                
+
+        Task { @MainActor in
+            defer {
+                self.status = .ok
+                self.romDownload = nil
+                self.save()
+            }
+            do {
+                let downloadedURL = try await romDownload.download()
+                DLog("Downloaded to \(downloadedURL)")
+                rom.url = downloadedURL
+
                 let result: Bool
                 do {
                     try result = rom.consolidateFiles()
@@ -325,20 +332,10 @@ final class OEDBGame: OEDBItem {
                     rom.url = nil
                 }
                 rom.save()
+            } catch {
+                DLog("ROM download failed! \(error)")
             }
-            else {
-                DLog("ROM download failed!")
-                if let error = error {
-                    DLog("\(error)")
-                }
-            }
-            
-            self.status = .ok
-            self.romDownload = nil
-            self.save()
         }
-        
-        romDownload.start()
     }
     
     func cancelROMDownload() {

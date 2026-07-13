@@ -295,20 +295,16 @@ final class OEGameDocument: NSDocument {
                     
                     alert.performBlockInModalSession {
                         let download = Download(url: sourceURL)
-                        download.progressHandler = { progress in
-                            alert.progress = Double(progress)
-                            return true
-                        }
-                        
-                        download.completionHandler = { dst, err in
-                            destination = dst
-                            if let err = err {
-                                error = err as NSError
+                        Task { @MainActor in
+                            do {
+                                destination = try await download.download(progressHandler: { progress in
+                                    alert.progress = progress
+                                })
+                            } catch let downloadError {
+                                error = downloadError as NSError
                             }
                             alert.close(withResult: .alertSecondButtonReturn)
                         }
-                        
-                        download.start()
                     }
                     
                     if alert.runModal() == .alertFirstButtonReturn || error?.code == NSUserCancelledError {

@@ -90,28 +90,31 @@ final class HomebrewViewController: NSViewController {
         currentDownload?.cancel()
         
         let download = Download(url: homebrewGamesURL)
-        weak var blockDL = download
-        download.completionHandler = { [self] destination, error in
-            if currentDownload == blockDL {
-                currentDownload = nil
-            }
-            if let nsErr = error as? CocoaError, nsErr.code == .userCancelled {
-                return
-            }
-            if error == nil, let destination = destination {
-                do {
-                    try parseFile(at: destination)
-                    displayResults()
-                } catch {
-                    displayError(error)
+        currentDownload = download
+
+        Task { @MainActor [weak self] in
+            guard let self = self else { return }
+            do {
+                let destination = try await download.download()
+                if self.currentDownload == download {
+                    self.currentDownload = nil
                 }
-            }
-            else {
-                displayError(error)
+                do {
+                    try self.parseFile(at: destination)
+                    self.displayResults()
+                } catch {
+                    self.displayError(error)
+                }
+            } catch {
+                if self.currentDownload == download {
+                    self.currentDownload = nil
+                }
+                // Swallow cancellations (a newer request superseded this one).
+                if (error as? URLError)?.code == .cancelled { return }
+                if (error as? CocoaError)?.code == .userCancelled { return }
+                self.displayError(error)
             }
         }
-        currentDownload = download
-        download.start()
     }
     
     private func parseFile(at url: URL) throws {
