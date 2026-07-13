@@ -837,7 +837,7 @@ extension AppDelegate: NSMenuDelegate {
             mainWindowController.showWindow(nil)
         }
         
-        CoreUpdater.shared.checkForNewCores()   // TODO: check error from completion handler
+        Task { try? await CoreUpdater.shared.checkForNewCores() }
         
         let userDefaultsController = NSUserDefaultsController.shared
         bind(.logHIDEvents, to: userDefaultsController, withKeyPath: "values.logsHIDEvents", options: nil)

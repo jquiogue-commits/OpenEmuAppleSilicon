@@ -163,8 +163,13 @@ final class SetupAssistant: NSViewController {
     
     private func attemptInitialCoreListUpdate() {
         coreListDownloadProgress.startAnimation(nil)
-        CoreUpdater.shared.checkForNewCores { error in
-            self.initialCoreListUpdateDidComplete(error: error)
+        Task { @MainActor in
+            do {
+                try await CoreUpdater.shared.checkForNewCores()
+                initialCoreListUpdateDidComplete(error: nil)
+            } catch {
+                initialCoreListUpdateDidComplete(error: error)
+            }
         }
     }
     

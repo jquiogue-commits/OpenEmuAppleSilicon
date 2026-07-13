@@ -301,7 +301,8 @@ extension MainWindowController: LibraryControllerDelegate {
                     alert.messageText = NSLocalizedString("Downloading core list...", comment: "")
                     alert.defaultButtonTitle = NSLocalizedString("Cancel", comment: "")
                     alert.performBlockInModalSession {
-                        CoreUpdater.shared.checkForNewCores { error in
+                        Task { @MainActor in
+                            try? await CoreUpdater.shared.checkForNewCores()
                             alert.close(withResult: .alertSecondButtonReturn)
                         }
                     }

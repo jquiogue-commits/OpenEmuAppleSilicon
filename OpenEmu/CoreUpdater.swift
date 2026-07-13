@@ -73,56 +73,51 @@ final class CoreUpdater: NSObject {
             performSelector(onMainThread: #selector(checkForUpdates), with: nil, waitUntilDone: false)
             return
         }
-        
+
         for plugin in OECorePlugin.allPlugins {
             if let appcastURLString = plugin.infoDictionary["SUFeedURL"] as? String,
                let feedURL = URL(string: appcastURLString) {
-                checkForUpdateInformation(url: feedURL, plugin: plugin) { item in
-                    DispatchQueue.main.async {
+                Task { @MainActor in
+                    for item in await self.updateInformation(at: feedURL, for: plugin) {
                         self.updaterDidFindValidUpdate(for: plugin, item: item)
                     }
                 }
             }
         }
     }
-    
-    private func checkForUpdateInformation(url: URL, plugin: OECorePlugin, handler: @escaping (CoreAppcastItem) -> Void) {
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            if let error {
-                Logger.download.error("Failed to download \(url, privacy: .public): \(error, privacy: .public)")
-                return
-            }
-            
-            guard let data else {
-                Logger.download.error("Data was nil for \(url, privacy: .public): \(error, privacy: .public)")
-                return
-            }
-            
-            do {
-                let items: [XMLElement]
-                let appcast = try XMLDocument(data: data)
-                items = try appcast.nodes(forXPath: "/rss/channel/item") as! [XMLElement]
-                
-                for item in items {
-                    if let enclosure = item.elements(forName: "enclosure").first,
-                       let fileURL = enclosure.attribute(forName: "url")?.stringValue,
-                       let url = URL(string: fileURL),
-                       let version = enclosure.attribute(forName: "sparkle:version")?.stringValue,
-                       let minOSVersion = item.elements(forName: "sparkle:minimumSystemVersion").first?.stringValue,
-                       SUStandardVersionComparator.default.compareVersion(version, toVersion: plugin.version) == .orderedDescending
-                    {
-                        let item = CoreAppcastItem(url: url, version: version, minOSVersion: minOSVersion)
-                        if item.isSupported {
-                            handler(item)
-                        }
-                    }
-                }
-            } catch {
-                Logger.download.error("Failed to process XML document for \(url, privacy: .public): \(error, privacy: .public)")
-            }
+
+    /// Fetches `plugin`'s appcast and returns the supported items that are newer
+    /// than the installed version.
+    private func updateInformation(at url: URL, for plugin: OECorePlugin) async -> [CoreAppcastItem] {
+        let data: Data
+        do {
+            data = try await fetchData(from: url)
+        } catch {
+            Logger.download.error("Failed to download \(url, privacy: .public): \(error, privacy: .public)")
+            return []
         }
-        
-        task.resume()
+
+        do {
+            let appcast = try XMLDocument(data: data)
+            let items = try appcast.nodes(forXPath: "/rss/channel/item") as! [XMLElement]
+
+            return items.compactMap { item -> CoreAppcastItem? in
+                guard
+                    let enclosure = item.elements(forName: "enclosure").first,
+                    let fileURL = enclosure.attribute(forName: "url")?.stringValue,
+                    let url = URL(string: fileURL),
+                    let version = enclosure.attribute(forName: "sparkle:version")?.stringValue,
+                    let minOSVersion = item.elements(forName: "sparkle:minimumSystemVersion").first?.stringValue,
+                    SUStandardVersionComparator.default.compareVersion(version, toVersion: plugin.version) == .orderedDescending
+                else { return nil }
+
+                let appcastItem = CoreAppcastItem(url: url, version: version, minOSVersion: minOSVersion)
+                return appcastItem.isSupported ? appcastItem : nil
+            }
+        } catch {
+            Logger.download.error("Failed to process XML document for \(url, privacy: .public): \(error, privacy: .public)")
+            return []
+        }
     }
     
     func checkForUpdatesAndInstall() {
@@ -134,93 +129,87 @@ final class CoreUpdater: NSObject {
         checkForUpdates()
     }
     
-    func checkForNewCores(completionHandler handler: ((_ error: Error?) -> Void)? = nil) {
+    @MainActor
+    func checkForNewCores() async throws {
         guard lastCoreListURLTask == nil else {
-            handler?(Errors.newCoreCheckAlreadyPendingError)
-            return
+            throw Errors.newCoreCheckAlreadyPendingError
         }
-        
+
         let coreListURL = URL(string: Bundle.main.infoDictionary!["OECoreListURL"] as! String)!
-        
-        lastCoreListURLTask = URLSession.shared.dataTask(with: coreListURL) { data, response, error in
-            defer {
-                DispatchQueue.main.async {
-                    if error == nil {
-                        self.updateCoreList()
+
+        let data: Data
+        do {
+            data = try await withCheckedThrowingContinuation { continuation in
+                let task = URLSession.shared.dataTask(with: coreListURL) { data, _, error in
+                    if let error {
+                        continuation.resume(throwing: error)
+                    } else {
+                        continuation.resume(returning: data ?? Data())
                     }
-                    
-                    handler?(error)
-                    
-                    self.lastCoreListURLTask = nil
                 }
+                lastCoreListURLTask = task
+                task.resume()
             }
-            
-            if let error {
-                Logger.download.error("Failed to check for new cores for \(coreListURL, privacy: .public): \(error, privacy: .public)")
-                return
-            }
-            
-            guard let data else {
-                Logger.download.error("Data was nil for \(coreListURL, privacy: .public)")
-                return
+        } catch {
+            lastCoreListURLTask = nil
+            Logger.download.error("Failed to check for new cores for \(coreListURL, privacy: .public): \(error, privacy: .public)")
+            throw error
+        }
+
+        lastCoreListURLTask = nil
+
+        defer { updateCoreList() }
+
+        guard
+            let coreList = try? XMLDocument(data: data, options: []),
+            let coreNodes = try? coreList.nodes(forXPath: "/cores/core") as? [XMLElement]
+        else { return }
+
+        for coreNode in coreNodes {
+            guard
+                let coreID = coreNode.attribute(forName: "id")?.stringValue,
+                coresDict[coreID] == nil,
+                let coreName = coreNode.attribute(forName: "name")?.stringValue,
+                let systemNodes = try? coreNode.nodes(forXPath: "./systems/system") as? [XMLElement],
+                let appcastURLString = coreNode.attribute(forName: "appcastURL")?.stringValue,
+                let appcastURL = URL(string: appcastURLString)
+            else { continue }
+
+            let download = CoreDownload()
+            download.name = coreName
+            download.bundleIdentifier = coreID
+
+            var systemNames: [String] = []
+            var systemIdentifiers: [String] = []
+
+            for systemNode in systemNodes {
+                if let systemName = systemNode.stringValue {
+                    systemNames.append(systemName)
+                }
+                if let systemIdentifier = systemNode.attribute(forName: "id")?.stringValue {
+                    systemIdentifiers.append(systemIdentifier)
+                }
             }
 
-            if let coreList = try? XMLDocument(data: data, options: []),
-               let coreNodes = try? coreList.nodes(forXPath: "/cores/core") as? [XMLElement] {
-                DispatchQueue.main.async {
-                    for coreNode in coreNodes {
-                        guard
-                            let coreID = coreNode.attribute(forName: "id")?.stringValue,
-                            self.coresDict[coreID] == nil,
-                            let coreName = coreNode.attribute(forName: "name")?.stringValue,
-                            let systemNodes = try? coreNode.nodes(forXPath: "./systems/system") as? [XMLElement],
-                            let appcastURLString = coreNode.attribute(forName: "appcastURL")?.stringValue,
-                            let appcastURL = URL(string: appcastURLString)
-                        else { continue }
-                        
-                        let download = CoreDownload()
-                        download.name = coreName
-                        download.bundleIdentifier = coreID
-                        
-                        var systemNames: [String] = []
-                        var systemIdentifiers: [String] = []
-                        
-                        for systemNode in systemNodes {
-                            if let systemName = systemNode.stringValue {
-                                systemNames.append(systemName)
-                            }
-                            if let systemIdentifier = systemNode.attribute(forName: "id")?.stringValue {
-                                systemIdentifiers.append(systemIdentifier)
-                            }
-                        }
-                        
-                        download.systemNames = systemNames
-                        download.systemIdentifiers = systemIdentifiers
-                        download.canBeInstalled = true
-                        
-                        let appcast = CoreAppcast(url: appcastURL)
-                        
-                        appcast.fetch {
-                            download.appcastItem = appcast.items.first { $0.isSupported }
-                            download.delegate = self
-                            
-                            DispatchQueue.main.async {
-                                if download == self.coreDownload {
-                                    download.start()
-                                }
-                                
-                                self.coresDict[coreID] = download
-                                self.updateCoreList()
-                            }
-                        }
-                    }
-                }
+            download.systemNames = systemNames
+            download.systemIdentifiers = systemIdentifiers
+            download.canBeInstalled = true
+
+            let appcast = CoreAppcast(url: appcastURL)
+            await appcast.fetch()
+
+            download.appcastItem = appcast.items.first { $0.isSupported }
+            download.delegate = self
+
+            if download == coreDownload {
+                download.start()
             }
+
+            coresDict[coreID] = download
+            updateCoreList()
         }
-        
-        lastCoreListURLTask?.resume()
     }
-    
+
     func cancelCheckForNewCores() {
         lastCoreListURLTask?.cancel()
         lastCoreListURLTask = nil
@@ -464,6 +453,22 @@ extension CoreUpdater {
     }
 }
 
+/// Fetches the contents of `url`, bridging the completion-based
+/// `URLSession.dataTask` to async (the async `URLSession.data(for:)` is macOS 12+,
+/// but the deployment floor is 11.5).
+private func fetchData(from url: URL) async throws -> Data {
+    try await withCheckedThrowingContinuation { continuation in
+        let task = URLSession.shared.dataTask(with: url) { data, _, error in
+            if let error {
+                continuation.resume(throwing: error)
+            } else {
+                continuation.resume(returning: data ?? Data())
+            }
+        }
+        task.resume()
+    }
+}
+
 private final class CoreAppcast {
     
     let url: URL
@@ -473,21 +478,20 @@ private final class CoreAppcast {
         self.url = url
     }
     
-    func fetch(completionHandler handler: (() -> Void)? = nil) {
-        let url = url
-        let task = URLSession.shared.dataTask(with: url) { data, response, error in
-            defer { handler?() }
-            
-            guard let data else { return }
-            
-            do {
-                self.items = try self.process(data: data)
-            } catch { 
-                Logger.download.error("Failed to process data for \(url, privacy: .public): \(error, privacy: .public)")
-            }
+    func fetch() async {
+        let data: Data
+        do {
+            data = try await fetchData(from: url)
+        } catch {
+            Logger.download.error("Failed to download \(self.url, privacy: .public): \(error, privacy: .public)")
+            return
         }
-        
-        task.resume()
+
+        do {
+            items = try process(data: data)
+        } catch {
+            Logger.download.error("Failed to process data for \(self.url, privacy: .public): \(error, privacy: .public)")
+        }
     }
     
     private func process(data: Data) throws -> [CoreAppcastItem] {

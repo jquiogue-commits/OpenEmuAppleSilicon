@@ -49,7 +49,7 @@ final class PrefCoresController: NSViewController {
             object, _ in
             self.coresTableView.reloadData()
         }
-        CoreUpdater.shared.checkForNewCores()   // TODO: check error from completion handler
+        Task { try? await CoreUpdater.shared.checkForNewCores() }
         CoreUpdater.shared.checkForUpdates()
         
         for column in coresTableView.tableColumns {
