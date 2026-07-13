@@ -174,6 +174,7 @@
 		0570B85725449E4C008EC8A6 /* ImageCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0544B68A23D16D0B00F63D61 /* ImageCollectionViewController.swift */; };
 		0570B858254AA10000EC8AA1 /* GameCollectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0544B68B254AA10000F63D62 /* GameCollectionViewController.swift */; };
 		0570B859254AA10000EC8AA2 /* GamesDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0544B68C254AA10000F63D63 /* GamesDataSource.swift */; };
+		0570B85A254AA10000EC8AA3 /* GameplayPreferencesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0544B68D254AA10000F63D64 /* GameplayPreferencesView.swift */; };
 		0571307F259A8859001CB13A /* AppMover.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0571307E259A8859001CB13A /* AppMover.swift */; };
 		0572A40E2877F92300AC32F8 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0572A4082877F5F400AC32F8 /* main.swift */; };
 		0586AB22231A1E9A00BCDA6B /* OEGameLayerNotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0586AB21231A1E9A00BCDA6B /* OEGameLayerNotificationView.swift */; };
@@ -346,7 +347,6 @@
 		83F4DE1314DFF9C200A82E36 /* InputLimitFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F4DE1214DFF9C200A82E36 /* InputLimitFormatter.swift */; };
 		83F7DBAF18C0E2470029199C /* OEFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83F7DBAE18C0E2470029199C /* OEFileManager.swift */; };
 		83FE9642196859B100DD8DB9 /* PrefCoresController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8F40EB7A1C1072B100683055 /* PrefCoresController.xib */; };
-		83FE9646196859D300DD8DB9 /* PrefGameplayController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8F40EB7B1C1072B100683055 /* PrefGameplayController.xib */; };
 		83FE964A196859F800DD8DB9 /* PrefLibraryController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8F40EB7C1C1072B100683055 /* PrefLibraryController.xib */; };
 		83FE965919685F6700DD8DB9 /* GameScanner.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8F40EB811C1072B200683055 /* GameScanner.xib */; };
 		83FE966419685F8F00DD8DB9 /* SetupAssistant.xib in Resources */ = {isa = PBXBuildFile; fileRef = 8F40EB841C1072B300683055 /* SetupAssistant.xib */; };
@@ -1290,6 +1290,7 @@
 		0544B68A23D16D0B00F63D61 /* ImageCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCollectionViewController.swift; sourceTree = "<group>"; };
 		0544B68B254AA10000F63D62 /* GameCollectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameCollectionViewController.swift; sourceTree = "<group>"; };
 		0544B68C254AA10000F63D63 /* GamesDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GamesDataSource.swift; sourceTree = "<group>"; };
+		0544B68D254AA10000F63D64 /* GameplayPreferencesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameplayPreferencesView.swift; sourceTree = "<group>"; };
 		0544B68B23D16D0B00F63D61 /* ImageCollectionHeaderView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageCollectionHeaderView.xib; sourceTree = "<group>"; };
 		0544B68C23D16D0C00F63D61 /* ImageCollectionViewItem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCollectionViewItem.swift; sourceTree = "<group>"; };
 		0544B68D23D16D0C00F63D61 /* ImageCollectionViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ImageCollectionViewController.xib; sourceTree = "<group>"; };
@@ -1629,7 +1630,6 @@
 		8F3A184D2860B5D9008A7AC9 /* OELibraryDatabase+Moving.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "OELibraryDatabase+Moving.swift"; sourceTree = "<group>"; };
 		8F40EB791C1072B100683055 /* PrefControlsController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PrefControlsController.xib; sourceTree = "<group>"; };
 		8F40EB7A1C1072B100683055 /* PrefCoresController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PrefCoresController.xib; sourceTree = "<group>"; };
-		8F40EB7B1C1072B100683055 /* PrefGameplayController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PrefGameplayController.xib; sourceTree = "<group>"; };
 		8F40EB7C1C1072B100683055 /* PrefLibraryController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PrefLibraryController.xib; sourceTree = "<group>"; };
 		8F40EB811C1072B200683055 /* GameScanner.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = GameScanner.xib; sourceTree = "<group>"; };
 		8F40EB841C1072B300683055 /* SetupAssistant.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SetupAssistant.xib; sourceTree = "<group>"; };
@@ -2525,6 +2525,7 @@
 				0544B68A23D16D0B00F63D61 /* ImageCollectionViewController.swift */,
 				0544B68B254AA10000F63D62 /* GameCollectionViewController.swift */,
 				0544B68C254AA10000F63D63 /* GamesDataSource.swift */,
+				0544B68D254AA10000F63D64 /* GameplayPreferencesView.swift */,
 				0544B68D23D16D0C00F63D61 /* ImageCollectionViewController.xib */,
 				0544B68C23D16D0C00F63D61 /* ImageCollectionViewItem.swift */,
 				0544B68E23D16D0C00F63D61 /* ImageCollectionViewItem.xib */,
@@ -2981,7 +2982,6 @@
 				53439B6D13B932DB005C0CC8 /* PrefLibraryController.swift */,
 				8F40EB7C1C1072B100683055 /* PrefLibraryController.xib */,
 				53439B7013B932ED005C0CC8 /* PrefGameplayController.swift */,
-				8F40EB7B1C1072B100683055 /* PrefGameplayController.xib */,
 				8F8BD0E926D3473400B70BF0 /* PrefControlsController.swift */,
 				8F40EB791C1072B100683055 /* PrefControlsController.xib */,
 				8F76285D255C835A00A1246D /* PrefControlsController2.xib */,
@@ -5544,7 +5544,6 @@
 				83FE9642196859B100DD8DB9 /* PrefCoresController.xib in Resources */,
 				0544B69F23D16D3100F63D61 /* CollectionViewItem.xib in Resources */,
 				0544B69523D16D0C00F63D61 /* ImageCollectionViewController.xib in Resources */,
-				83FE9646196859D300DD8DB9 /* PrefGameplayController.xib in Resources */,
 				0544B69323D16D0C00F63D61 /* ImageCollectionHeaderView.xib in Resources */,
 				05B753A023330EB60063BD73 /* Main.storyboard in Resources */,
 				8F071F391C25534E007B76DA /* Preferences.xib in Resources */,
@@ -6331,6 +6330,7 @@
 				0570B85725449E4C008EC8A6 /* ImageCollectionViewController.swift in Sources */,
 				0570B858254AA10000EC8AA1 /* GameCollectionViewController.swift in Sources */,
 				0570B859254AA10000EC8AA2 /* GamesDataSource.swift in Sources */,
+				0570B85A254AA10000EC8AA3 /* GameplayPreferencesView.swift in Sources */,
 				01E2A2F323E60F7E00194150 /* PrefCoresController.swift in Sources */,
 				8FBD79192736A17B00E455FC /* GameInfoHelper.swift in Sources */,
 				5A438A1B1D89AEB60061A47C /* OpenEmuApplication.swift in Sources */,

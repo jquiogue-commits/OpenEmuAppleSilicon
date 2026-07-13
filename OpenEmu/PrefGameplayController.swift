@@ -23,80 +23,25 @@
 // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import Cocoa
-import OpenEmuKit
+import SwiftUI
 
+/// Hosts the SwiftUI `GameplayPreferencesView` in the AppKit preferences window.
 final class PrefGameplayController: NSViewController {
-    
-    @IBOutlet var globalDefaultShaderSelection: NSPopUpButton!
-    
-    private var token: NSObjectProtocol?
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        loadShaderMenu()
-        
-        token = NotificationCenter.default.addObserver(forName: .shaderModelCustomShadersDidChange, object: nil, queue: .main) { [weak self] _ in
-            guard let self = self else { return }
-            
-            self.loadShaderMenu()
-        }
-    }
-    
-    deinit {
-        if let token = token {
-            NotificationCenter.default.removeObserver(token)
-            self.token = nil
-        }
-    }
-    
-    private func loadShaderMenu() {
-        
-        let globalShaderMenu = NSMenu()
-        
-        let systemShaders = OEShaderStore.shared.sortedSystemShaderNames
-        systemShaders.forEach { shaderName in
-            globalShaderMenu.addItem(withTitle: shaderName, action: nil, keyEquivalent: "")
-        }
-        
-        let customShaders = OEShaderStore.shared.sortedCustomShaderNames
-        if !customShaders.isEmpty {
-            globalShaderMenu.addItem(.separator())
-            
-            customShaders.forEach { shaderName in
-                globalShaderMenu.addItem(withTitle: shaderName, action: nil, keyEquivalent: "")
-            }
-        }
-        
-        globalDefaultShaderSelection.menu = globalShaderMenu
-        
-        let selectedShaderName = OEShaderStore.shared.defaultShaderName
-        
-        if globalDefaultShaderSelection.item(withTitle: selectedShaderName) != nil {
-            globalDefaultShaderSelection.selectItem(withTitle: selectedShaderName)
-        } else {
-            globalDefaultShaderSelection.selectItem(at: 0)
-        }
-    }
-    
-    @IBAction func changeGlobalDefaultShader(_ sender: Any?) {
-        guard let context = OELibraryDatabase.default?.mainThreadContext else { return }
-        
-        guard let shaderName = globalDefaultShaderSelection.selectedItem?.title else { return }
-        
-        let allSystemIdentifiers = OEDBSystem.allSystemIdentifiers(in: context)
-        allSystemIdentifiers.forEach(OESystemShaderStore.shared.resetShader(forSystem:))
-        OEShaderStore.shared.defaultShaderName = shaderName
+
+    override func loadView() {
+        let hostingView = NSHostingView(rootView: GameplayPreferencesView())
+        hostingView.frame = NSRect(origin: .zero, size: hostingView.fittingSize)
+        view = hostingView
     }
 }
 
 // MARK: - PreferencePane
 
 extension PrefGameplayController: PreferencePane {
-    
+
     var icon: NSImage? { NSImage(named: "gameplay_tab_icon") }
-    
+
     var panelTitle: String { "Gameplay" }
-    
+
     var viewSize: NSSize { view.fittingSize }
 }
