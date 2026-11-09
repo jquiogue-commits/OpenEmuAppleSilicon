@@ -12,8 +12,9 @@ running the app against an isolated test library (never the user's real one).
 
 ## Environment
 
-- **Xcode:** 26.5, arm64
-- **Deployment floor:** macOS 11.5 (Big Sur), unified across all app targets
+- **Xcode:** built on 26.5; currently verified on **27.2**, arm64
+- **Deployment floor:** **macOS 12.0 (Monterey)**, unified across all app targets
+  (raised from 11.5 — see [Toolchain update](#toolchain-update-xcode-272--macos-120-floor))
 - **Swift:** 5.0 language mode
 
 ## Building
@@ -113,6 +114,25 @@ conformance is unchanged, so the window/toolbar host them as before):
 
 Kept to macOS 11.5-safe SwiftUI (`@AppStorage`/`@StateObject` are 11.0+; avoided
 `.formStyle`/`LabeledContent`/`@FocusState`, which are 12–13+).
+
+## Toolchain update: Xcode 27.2 / macOS 12.0 floor
+
+Phases 0–5 were done against Xcode 26.5 with an 11.5 floor (the phase notes above describe
+that state and are left as written). Xcode 27.2 no longer supports deployment targets
+below 12.0, so the whole project failed to build on it. The fix:
+
+- **Floor raised to 12.0** in the app project (all 8 settings). The submodule projects
+  (OpenEmu-SDK, OpenEmuKit, OpenEmu-Shaders, SPIRV) set 10.14/10.14.4 themselves, so the
+  build wrapper passes `MACOSX_DEPLOYMENT_TARGET=12.0` rather than editing submodules.
+- **`OpenEmuKit` submodule advanced** from `2bc0ee9` to upstream `b04276c`, which contains
+  the upstream "Fix building for Xcode 27.0" change. At a 12.0 target the old pinned
+  revision hit a hard error: its `else` branch (macOS < 11 only) referenced `GameAudio`,
+  which is marked obsolete from 11.0. No fork or local patch is needed.
+- **Metal toolchain** must be re-installed per Xcode (`xcodebuild -downloadComponent MetalToolchain`).
+
+With the floor at 12.0, the async `URLSession.data/download(for:)` APIs are now available,
+so the continuation bridges added in Phase 4 *could* be simplified. They still work and
+were left alone to keep this change minimal.
 
 ## Reproducibility
 

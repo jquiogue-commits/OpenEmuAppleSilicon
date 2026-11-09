@@ -61,10 +61,15 @@ xcodebuild \
   VERSIONING_SYSTEM="" \
   SWIFT_ENABLE_EXPLICIT_MODULES=NO \
   GCC_TREAT_WARNINGS_AS_ERRORS=NO \
+  MACOSX_DEPLOYMENT_TARGET=12.0 \
   build          # or: build-for-testing
 ```
 
-### Why the three build-setting overrides
+> **Xcode 27.x:** also verified on Xcode 27.2. It requires the 12.0 deployment target
+> override below and the updated `OpenEmuKit` submodule pointer already recorded in this
+> repo; reinstall the Metal toolchain for each new Xcode (§2).
+
+### Why the build-setting overrides
 
 - `VERSIONING_SYSTEM=""` — the vendored `CSPIRVTools` target (in the SwiftSPIRV-Cross
   submodule) uses `apple-generic` versioning. The generated `CSPIRVTools_vers.c`
@@ -77,6 +82,9 @@ xcodebuild \
   under explicit modules. Reverting to implicit modules restores the 2.4.1 behavior.
 - `GCC_TREAT_WARNINGS_AS_ERRORS=NO` — lets the unmodified upstream OpenEmu-SDK compile
   (see §3); newer clang would otherwise reject a latent `-Wenum-compare` under `-Werror`.
+- `MACOSX_DEPLOYMENT_TARGET=12.0` — Xcode 27 rejects targets below 12.0. The app project
+  sets 12.0 itself; this override covers the submodule projects (10.14/10.14.4) so they
+  don't need editing.
 
 These three are passed on the command line (no project or submodule files edited). To
 make them permanent, bake them into an `.xcconfig` or the relevant target build settings.
