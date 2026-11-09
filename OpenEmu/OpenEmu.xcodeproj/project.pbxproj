@@ -214,8 +214,6 @@
 		277CBA5A19DE55210059A2C1 /* Keyboard-Mappings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 277CBA5819DE55210059A2C1 /* Keyboard-Mappings.plist */; };
 		277CBA5D19DE553C0059A2C1 /* Controller-Mappings.plist in Resources */ = {isa = PBXBuildFile; fileRef = 277CBA5B19DE553C0059A2C1 /* Controller-Mappings.plist */; };
 		277CBA5E19DE553C0059A2C1 /* Controller-Preferences.plist in Resources */ = {isa = PBXBuildFile; fileRef = 277CBA5C19DE553C0059A2C1 /* Controller-Preferences.plist */; };
-		3887A8051024D2BC000FC4CF /* GenerateThumbnailForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 3887A8021024D2BC000FC4CF /* GenerateThumbnailForURL.m */; };
-		3887A8061024D2BC000FC4CF /* GeneratePreviewForURL.m in Sources */ = {isa = PBXBuildFile; fileRef = 3887A8031024D2BC000FC4CF /* GeneratePreviewForURL.m */; };
 		3887A8071024D2BC000FC4CF /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 3887A8041024D2BC000FC4CF /* main.c */; };
 		3DB744AB1BD8BA9E00C23E74 /* OpenEmuSystem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6D120C417112E1300E868A8 /* OpenEmuSystem.framework */; };
 		3DB744BD1BD8BAB200C23E74 /* OEPS2SystemController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3DB744781BD8B95300C23E74 /* OEPS2SystemController.swift */; };
@@ -302,7 +300,6 @@
 		8301557B1456BF7A0093D681 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8301557A1456BF7A0093D681 /* GameViewController.swift */; };
 		8306CD101BD3AC180025BC6C /* LibraryGamesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8306CD0E1BD3AC180025BC6C /* LibraryGamesViewController.swift */; };
 		83096F0314E98FC000F7EBC2 /* FileManager+Hashing.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83096F0214E98FC000F7EBC2 /* FileManager+Hashing.swift */; };
-		8309A77F166CE52D0013AD4A /* OESaveStateQLPlugin.qlgenerator in Copy SaveState QL Generator */ = {isa = PBXBuildFile; fileRef = 3887A7F61024D1F9000FC4CF /* OESaveStateQLPlugin.qlgenerator */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		8314A98C155410EF00DF13B5 /* OEDBItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8314A98B155410EF00DF13B5 /* OEDBItem.swift */; };
 		83199722142741790068C865 /* ROMImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83199721142741790068C865 /* ROMImporter.swift */; };
 		832AB28C18649B550022DFB0 /* 1.0 Beta 4 to 1.0.xcmappingmodel in Sources */ = {isa = PBXBuildFile; fileRef = 832AB28B18649B550022DFB0 /* 1.0 Beta 4 to 1.0.xcmappingmodel */; };
@@ -888,13 +885,6 @@
 			remoteGlobalIDString = 8D15AC270486D014006FF6A4;
 			remoteInfo = OpenEmu;
 		};
-		8309A780166CE6360013AD4A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2A37F4A9FDCFA73011CA2CEA /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 3887A7F51024D1F9000FC4CF;
-			remoteInfo = OESaveStateQLPlugin;
-		};
 		83F37148140BB177005A7353 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2A37F4A9FDCFA73011CA2CEA /* Project object */;
@@ -1174,17 +1164,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8309A77E166CE51E0013AD4A /* Copy SaveState QL Generator */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = Contents/Library/QuickLook;
-			dstSubfolderSpec = 1;
-			files = (
-				8309A77F166CE52D0013AD4A /* OESaveStateQLPlugin.qlgenerator in Copy SaveState QL Generator */,
-			);
-			name = "Copy SaveState QL Generator";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		8F94DEC7250EC701003A1F33 /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1372,11 +1351,7 @@
 		277CBA5B19DE553C0059A2C1 /* Controller-Mappings.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Controller-Mappings.plist"; sourceTree = "<group>"; };
 		277CBA5C19DE553C0059A2C1 /* Controller-Preferences.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "Controller-Preferences.plist"; sourceTree = "<group>"; };
 		32DBCF750370BD2300C91783 /* OpenEmu_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OpenEmu_Prefix.pch; sourceTree = "<group>"; };
-		3887A7F61024D1F9000FC4CF /* OESaveStateQLPlugin.qlgenerator */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OESaveStateQLPlugin.qlgenerator; sourceTree = BUILT_PRODUCTS_DIR; };
-		3887A8021024D2BC000FC4CF /* GenerateThumbnailForURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GenerateThumbnailForURL.m; sourceTree = "<group>"; };
-		3887A8031024D2BC000FC4CF /* GeneratePreviewForURL.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratePreviewForURL.m; sourceTree = "<group>"; };
 		3887A8041024D2BC000FC4CF /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
-		3887A80D1024D377000FC4CF /* OESaveStateQLPlugin-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "OESaveStateQLPlugin-Info.plist"; sourceTree = "<group>"; };
 		3C335CBF1C70E49F00E33B79 /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		3C335CC01C70E4A000E33B79 /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		3C335CC11C70E4A000E33B79 /* zh-Hans */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/ControlLabels.strings"; sourceTree = "<group>"; };
@@ -2095,13 +2070,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3887A7F41024D1F9000FC4CF /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		3DB744A91BD8BA9E00C23E74 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -2684,7 +2652,6 @@
 			isa = PBXGroup;
 			children = (
 				8D15AC370486D014006FF6A4 /* OpenEmu.app */,
-				3887A7F61024D1F9000FC4CF /* OESaveStateQLPlugin.qlgenerator */,
 				1BEF2A9411682A530090F72B /* OpenEmuHelperApp */,
 				C671180F136368330034379A /* SegaMasterSystem.oesystemplugin */,
 				C64BB08D136478E600C1AB23 /* NES.oesystemplugin */,
@@ -2848,7 +2815,6 @@
 				C67118201363687A0034379A /* System Plugins */,
 				1BEF2A621168265D0090F72B /* Helper App (Remote Layer) */,
 				0547FE1524E86D9F005C1FFC /* broker */,
-				3887A8011024D29D000FC4CF /* OpenEmuQLGenerator */,
 				8F94DEBF250EC701003A1F33 /* OpenEmuQLThumbnail */,
 				8F94DED2250ED838003A1F33 /* OpenEmuQLPreview */,
 				2A37F4AFFDCFA73011CA2CEA /* Other Sources */,
@@ -2924,17 +2890,6 @@
 				1058C7A6FEA54F5311CA2CBB /* Linked Frameworks */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		3887A8011024D29D000FC4CF /* OpenEmuQLGenerator */ = {
-			isa = PBXGroup;
-			children = (
-				3887A8021024D2BC000FC4CF /* GenerateThumbnailForURL.m */,
-				3887A8031024D2BC000FC4CF /* GeneratePreviewForURL.m */,
-				3887A8041024D2BC000FC4CF /* main.c */,
-				3887A80D1024D377000FC4CF /* OESaveStateQLPlugin-Info.plist */,
-			);
-			path = OpenEmuQLGenerator;
 			sourceTree = "<group>";
 		};
 		3DB744761BD8B92A00C23E74 /* PlayStation 2 */ = {
@@ -4298,13 +4253,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		3887AAED1024DDD6000FC4CF /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -4462,24 +4410,6 @@
 			productReference = 277CBA4519DE54200059A2C1 /* Intellivision.oesystemplugin */;
 			productType = "com.apple.product-type.bundle";
 		};
-		3887A7F51024D1F9000FC4CF /* OESaveStateQLPlugin */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 3887A7FB1024D1FA000FC4CF /* Build configuration list for PBXNativeTarget "OESaveStateQLPlugin" */;
-			buildPhases = (
-				3887AAED1024DDD6000FC4CF /* Headers */,
-				3887A7F21024D1F9000FC4CF /* Resources */,
-				3887A7F31024D1F9000FC4CF /* Sources */,
-				3887A7F41024D1F9000FC4CF /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = OESaveStateQLPlugin;
-			productName = OESaveStateQLPlugin;
-			productReference = 3887A7F61024D1F9000FC4CF /* OESaveStateQLPlugin.qlgenerator */;
-			productType = "com.apple.product-type.bundle";
-		};
 		3DB744A51BD8BA9E00C23E74 /* PlayStation 2 */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 3DB744B71BD8BA9E00C23E74 /* Build configuration list for PBXNativeTarget "PlayStation 2" */;
@@ -4608,7 +4538,6 @@
 				8D15AC330486D014006FF6A4 /* Frameworks */,
 				828ED4F00E7D98F60059F397 /* Copy Frameworks to App Frameworks */,
 				948E540C1571D739002D26E0 /* Copy System Plugins to App Plugins */,
-				8309A77E166CE51E0013AD4A /* Copy SaveState QL Generator */,
 				0547FDDB24E8614C005C1FFC /* Copy Auxilliary Executables */,
 				0547FE1F24E86D9F005C1FFC /* Embed XPC Services */,
 				8F94DEC7250EC701003A1F33 /* Embed Foundation Extensions */,
@@ -4619,7 +4548,6 @@
 			);
 			dependencies = (
 				012148242537D7F2007F3C84 /* PBXTargetDependency */,
-				8309A781166CE6360013AD4A /* PBXTargetDependency */,
 				3DAA589A14464890001C09A8 /* PBXTargetDependency */,
 				1B6A25021430F8FB009F1CE1 /* PBXTargetDependency */,
 				0547FE1E24E86D9F005C1FFC /* PBXTargetDependency */,
@@ -5319,7 +5247,6 @@
 				0547FE1324E86D9F005C1FFC /* broker */,
 				8F94DEB9250EC701003A1F33 /* OpenEmuQLThumbnail */,
 				8F94DECE250ED838003A1F33 /* OpenEmuQLPreview */,
-				3887A7F51024D1F9000FC4CF /* OESaveStateQLPlugin */,
 				943F99B21707DF3700270E89 /* 3DO */,
 				945E42FA1517F2B500057D08 /* Arcade */,
 				94A224A21707543600098DA0 /* Atari 2600 */,
@@ -5431,13 +5358,6 @@
 				277CBA5D19DE553C0059A2C1 /* Controller-Mappings.plist in Resources */,
 				277CBA5A19DE55210059A2C1 /* Keyboard-Mappings.plist in Resources */,
 				277CBA5E19DE553C0059A2C1 /* Controller-Preferences.plist in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		3887A7F21024D1F9000FC4CF /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -6159,16 +6079,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		3887A7F31024D1F9000FC4CF /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				3887A8051024D2BC000FC4CF /* GenerateThumbnailForURL.m in Sources */,
-				3887A8061024D2BC000FC4CF /* GeneratePreviewForURL.m in Sources */,
-				3887A8071024D2BC000FC4CF /* main.c in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		3DB744A61BD8BA9E00C23E74 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -6825,11 +6735,6 @@
 			isa = PBXTargetDependency;
 			target = 8D15AC270486D014006FF6A4 /* OpenEmu */;
 			targetProxy = 82C9C97D0F080C920071460B /* PBXContainerItemProxy */;
-		};
-		8309A781166CE6360013AD4A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 3887A7F51024D1F9000FC4CF /* OESaveStateQLPlugin */;
-			targetProxy = 8309A780166CE6360013AD4A /* PBXContainerItemProxy */;
 		};
 		83F37149140BB177005A7353 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -7558,26 +7463,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "Build & Copy OpenEmuBase";
-			};
-			name = Release;
-		};
-		3887A7F81024D1FA000FC4CF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				INFOPLIST_FILE = "OpenEmuQLGenerator/OESaveStateQLPlugin-Info.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = org.openemu.savestategenerator;
-				PRODUCT_NAME = OESaveStateQLPlugin;
-				WRAPPER_EXTENSION = qlgenerator;
-			};
-			name = Debug;
-		};
-		3887A7F91024D1FA000FC4CF /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				INFOPLIST_FILE = "OpenEmuQLGenerator/OESaveStateQLPlugin-Info.plist";
-				PRODUCT_BUNDLE_IDENTIFIER = org.openemu.savestategenerator;
-				PRODUCT_NAME = OESaveStateQLPlugin;
-				WRAPPER_EXTENSION = qlgenerator;
 			};
 			name = Release;
 		};
@@ -8894,15 +8779,6 @@
 			buildConfigurations = (
 				37C80302101564A300356EF3 /* Debug */,
 				37C80303101564A300356EF3 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		3887A7FB1024D1FA000FC4CF /* Build configuration list for PBXNativeTarget "OESaveStateQLPlugin" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				3887A7F81024D1FA000FC4CF /* Debug */,
-				3887A7F91024D1FA000FC4CF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
